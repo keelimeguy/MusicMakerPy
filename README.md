@@ -16,3 +16,5 @@ Todo
 `python -m musicmaker.theory.scale -h`
 
 `python -m musicmaker.sound.metronome -h`
+
+`python -m musicmaker.sound.wav -h`
