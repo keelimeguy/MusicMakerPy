@@ -2,6 +2,8 @@
 
 A program to make, generate, and play: chord progressions, phrases, and other such musical things.
 
+## Java Version
+This program is an inspired rewrite of my [java implementation](https://github.com/keelimeguy/MusicMaker).
 
 ## Usage
 
