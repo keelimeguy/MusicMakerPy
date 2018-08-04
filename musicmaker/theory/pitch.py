@@ -1,0 +1,77 @@
+import functools
+
+STANDARD_PITCH = 440
+
+NOTE_MAP = {
+    'C':    12,       'B#':   12,       'Dbb':  12,
+    'Db':   13,       'C#':   13,       'B##':  13,
+    'D':    14,       'Ebb':  14,       'C##':  14,
+    'Eb':   15,       'D#':   15,       'Fbb':  15,
+    'E':    16,       'Fb':   16,       'D##':  16,
+    'F':    17,       'E#':   17,       'Gbb':  17,
+    'Gb':   18,       'F#':   18,       'E##':  18,
+    'G':    19,       'Abb':  19,       'F##':  19,
+    'Ab':   20,       'G#':   20,
+    'A':    21,       'Bbb':  21,       'G##':  21,
+    'Bb':   22,       'A#':   22,       'Cbb':  22,
+    'B':    23,       'Cb':   23,       'A##':  23
+}
+REV_NOTE_MAP = { 0: 'C', 1: 'Db', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F', 6: 'Gb', 7: 'G', 8: 'Ab', 9: 'A', 10: 'Bb', 11: 'B' }
+
+@functools.lru_cache(32)
+def freq_equal_temperament(n, base_freq):
+    return base_freq * 2^((n-69)/12)
+
+class Pitch:
+    def __init__(self, name='C', octave=4):
+        self.name = name
+        self.octave = octave
+        self.value = NOTE_MAP[name]+12*octave
+
+    def __str__(self):
+        return self.name + str(self.octave)
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def half_step(self, steps=1):
+        value = self.value + steps
+        octave = self.octave + int(steps/12)
+        change = steps - int(steps/12)*12 + (self.value%12)
+        if change > 11:
+            octave += 1
+        if change < 0:
+            octave -= 1
+        return Pitch(REV_NOTE_MAP[value%12], octave)
+
+    def flat(self):
+        f = Pitch(self.name, self.octave)
+        f.name += 'b'
+        f.value -= 1
+        if f.value%12 == 11:
+            f.octave -= 1
+        return f
+
+    def sharp(self):
+        s = Pitch(self.name, self.octave)
+        s.name += '#'
+        s.value += 1
+        if s.value%12 == 0:
+            s.octave += 1
+        return s
+
+    def normal(self):
+        return Pitch(REV_NOTE_MAP[self.value%12], self.octave)
+
+    def freq(self):
+        return freq_equal_temperament(self.value, STANDARD_PITCH)
+
+    def set_octave(self, octave):
+        self.octave = octave
+        self.value = self.value%12 + 12 + octave*12
+
+    def valid(name):
+        return name in NOTE_MAP
+
+    def notes():
+        return [note for note in NOTE_MAP]
