@@ -18,3 +18,7 @@ Todo
 `python -m musicmaker.sound.metronome -h`
 
 `python -m musicmaker.sound.wav -h`
+
+`python -m musicmaker.theory.majorprogression -h`
+
+`python -m musicmaker.theory.minorprogression -h`
