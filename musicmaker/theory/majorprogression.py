@@ -45,9 +45,9 @@ class MajorProgression(ProgressionGraph):
         'bVII9':      ProgressionGraph.Position('bVII9', -7.5, '9', [])
     }
 
-    def __init__(self, root, start=None):
+    def __init__(self, root=None, start=None):
         resolve = self.position_dict['I']
-        ProgressionGraph.__init__(self, Scale(root, Scale.modes['Major']), resolve, start)
+        ProgressionGraph.__init__(self, Scale(root, 'Major'), resolve, start)
         self.setup()
 
     def setup(self):
@@ -132,13 +132,21 @@ class MajorProgression(ProgressionGraph):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Generate major chord progression.')
-    parser.add_argument('root',
+    parser.add_argument('-r', '--root',
         help='The root of the major progression (e.g. C, Bb, F#).')
+    parser.add_argument('-g', '--generate',
+        help='Generate a major progression with the given length.')
     args = parser.parse_args()
 
-    if not Pitch.valid(args.root):
-        print('Valid roots are', [root for root in Pitch.notes()])
-        sys.exit()
+    if args.root:
+        if not Pitch.valid(args.root):
+            print('Valid roots are', ['None']+[root for root in Pitch.notes()])
+            sys.exit()
+        p = MajorProgression(Pitch(args.root));
+    else:
+        p = MajorProgression();
 
-    p = MajorProgression(Pitch(args.root));
-    p.show();
+    if args.generate:
+        p.generate(int(args.generate)).show()
+    else:
+        p.show();

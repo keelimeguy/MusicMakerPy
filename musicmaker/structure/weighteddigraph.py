@@ -5,14 +5,14 @@ class WeightedDigraph:
             self.value = value
             self.adj = {}
 
-        def __str__(self):
-            return str(self.value)
-
         def add_neighbor(self, node, weight=0):
             self.adj[node] = weight
 
+        def outdegree(self):
+            return len(self.adj)
+
         def neighbors(self):
-            return self.adj.keys()
+            return sorted(self.adj.keys(), key=lambda n: n.value)
 
         def value(self):
             return value
@@ -28,6 +28,12 @@ class WeightedDigraph:
         self.V[value] = node
         return node
 
+    def get_else_add(self, value):
+        if value in self.V:
+            return self.V[value]
+        else:
+            return self.add(value)
+
     def get(self, value):
         if value in self.V:
             return self.V[value]
@@ -39,17 +45,20 @@ class WeightedDigraph:
             node = self.add(head)
         else:
             node = self.get(head)
-        if tail not in self.V:
-            self.add(tail)
 
-        node.add_neighbor(tail, weight)
+        if tail not in self.V:
+            tail_node = self.add(tail)
+        else:
+            tail_node = self.get(tail)
+
+        node.add_neighbor(tail_node, weight)
 
     def vertixes(self):
         return self.V.keys()
 
     def show(self):
-        for key in sorted(self.V, key=lambda n:str(n)):
+        for key in sorted(self.V):
             v = self.V[key]
-            print(str(v),':')
-            for adj in sorted(v.adj, key=lambda n:(v.adj[n], str(n))):
-                print('\t->(', v.adj[adj], ') \t', str(adj))
+            print(str(v.value),':')
+            for adj in sorted(v.adj, key=lambda n: (v.adj[n], n.value)):
+                print('\t->(', v.adj[adj], ') \t', str(adj.value))

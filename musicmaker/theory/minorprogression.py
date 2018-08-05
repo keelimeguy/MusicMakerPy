@@ -21,7 +21,7 @@ class MinorProgression(ProgressionGraph):
         'bII/4':      ProgressionGraph.Position('bII/4', -2.5, '/4', []),
         'im/b3':      ProgressionGraph.Position('im/b3', 1, 'm/b3', []),
         'im/5':       ProgressionGraph.Position('im/5', 1, 'm/5', []),
-        'im':         ProgressionGraph.Position('im', 1, '', ['2','sus4']),
+        'im':         ProgressionGraph.Position('im', 1, 'm', ['2','sus4']),
         'ivm/1':      ProgressionGraph.Position('ivm/1', 4, 'm/1', []),
         'V/1':        ProgressionGraph.Position('V/1', 5, '/1', []),
 
@@ -32,19 +32,19 @@ class MinorProgression(ProgressionGraph):
         'I':          ProgressionGraph.Position('I', 1, '', ['7', 'Mb9no7']),
         '#ivdim7':    ProgressionGraph.Position('#ivdim7', 4.5, 'dim7', []),
         'vim7b5':     ProgressionGraph.Position('vim7b5', 6, 'm7b5', []),
-        'II':         ProgressionGraph.Position('II', 2, '', ['7', 'b9']),
+        'II':         ProgressionGraph.Position('II', 2, '', ['7', 'Mb9no7']),
         'bVI*':       ProgressionGraph.Position('bVI*', -6.5, '', []),
         'bVII':       ProgressionGraph.Position('bVII', -7.5, '', ['9']),
         'ivm7':       ProgressionGraph.Position('ivm7', 4, 'm7', []),
         'Vm7b5':      ProgressionGraph.Position('Vm7b5', 5, 'm7b5', ['dim7']),
-        'bIII':       ProgressionGraph.Position('bIII', -3.5, '', ['7', '9', 'b9']),
+        'bIII':       ProgressionGraph.Position('bIII', -3.5, '', ['7', '9', 'Mb9no7']),
         'bviim7b5':   ProgressionGraph.Position('bviim7b5', -7.5, 'm7b5', []),
         'bVI7':       ProgressionGraph.Position('bVI7', -6.5, '7', []),
     }
 
-    def __init__(self, root, start=None):
+    def __init__(self, root=None, start=None):
         resolve = self.position_dict['im']
-        ProgressionGraph.__init__(self, Scale(root, Scale.modes['Minor']), resolve, start)
+        ProgressionGraph.__init__(self, Scale(root, 'Minor'), resolve, start)
         self.setup()
 
     def setup(self):
@@ -124,13 +124,21 @@ class MinorProgression(ProgressionGraph):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Generate minor chord progression.')
-    parser.add_argument('root',
-        help='The root of the minor progression.')
+    parser.add_argument('-r', '--root',
+        help='The root of the minor progression (e.g. C, Bb, F#).')
+    parser.add_argument('-g', '--generate',
+        help='Generate a minor progression with the given length.')
     args = parser.parse_args()
 
-    if not Pitch.valid(args.root):
-        print('Valid roots are', [root for root in Pitch.notes()])
-        sys.exit()
+    if args.root:
+        if not Pitch.valid(args.root):
+            print('Valid roots are', ['None']+[root for root in Pitch.notes()])
+            sys.exit()
+        p = MinorProgression(Pitch(args.root));
+    else:
+        p = MinorProgression();
 
-    p = MinorProgression(Pitch(args.root));
-    p.show();
+    if args.generate:
+        p.generate(int(args.generate)).show()
+    else:
+        p.show();

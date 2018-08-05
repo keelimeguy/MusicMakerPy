@@ -25,22 +25,25 @@ REDUCED_CHORD_REGEX = (
 class Chord:
     def __init__(self, name, octave=4):
         self.name = name
-        self.pitches = []
+        self.notes = []
         self.make(name, octave)
 
     def __str__(self):
         return self.name
 
     def show(self):
-        print(self, ':', [str(pitch) for pitch in self.pitches])
+        print(self, ':', [str(pitch) for pitch in self.notes])
 
     def remove(self, pitch):
-        if pitch in self.pitches:
-            self.pitches.remove(pitch)
+        if pitch in self.notes:
+            self.notes.remove(pitch)
 
     def add(self, pitch):
         self.remove(pitch)
-        self.pitches.append(pitch)
+        self.notes.append(pitch)
+
+    def get_notes(self):
+        return self.notes
 
     def make(self, name, octave=4):
         self.valid = False
@@ -236,22 +239,22 @@ class Chord:
                     add_arg = re.sub(r'[#b]', '', add_arg)
                     self.add(root.half_step(major_mode.find_step(int(add_arg)) + base_step_adjust))
 
-        self.pitches.sort(key=lambda el: el.value)
+        self.notes.sort(key=lambda el: el.value)
         self.valid = True
 
     def order(self, bass_note, octave=4):
         # Sort notes so that bass_note would be positioned first
-        if bass_note in self.pitches:
-            self.pitches.sort(key=lambda el: el.value)
-            next = self.pitches[0]
+        if bass_note in self.notes:
+            self.notes.sort(key=lambda el: el.value)
+            next = self.notes[0]
             while next.value%12 != bass_note.value%12:
                 self.remove(next)
                 self.add(next)
-                next = self.pitches[0]
-            for i in range(len(self.pitches)):
-                self.pitches[i].set_octave(octave)
-                if i+1 < len(self.pitches):
-                    if self.pitches[i+1].value%12 <= self.pitches[i].value%12:
+                next = self.notes[0]
+            for i in range(len(self.notes)):
+                self.notes[i].set_octave(octave)
+                if i+1 < len(self.notes):
+                    if self.notes[i+1].value%12 <= self.notes[i].value%12:
                         octave += 1
         else:
             self.add(bass_note)

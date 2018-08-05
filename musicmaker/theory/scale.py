@@ -120,6 +120,7 @@ class Scale:
 
     def __init__(self, root, mode):
         self.root = root
+        self.mode = None
         self.valid = False
 
         if mode in self.modes:
@@ -135,7 +136,14 @@ class Scale:
         else:
             print(str(self), ':', self.mode.ascending+[12]+self.mode.descending)
 
-
+    def get_pitch(self, num):
+        pitch = self.root.half_step(self.mode.find_step(int(abs(num))))
+        if int(abs(num)) != num:
+            if num < 0:
+                pitch = pitch.half_step(-1)
+            else:
+                pitch = pitch.half_step(1)
+        return pitch
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
