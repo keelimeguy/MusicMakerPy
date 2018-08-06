@@ -22,10 +22,11 @@ class Metronome(Thread):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Run a metronome at a given BPM.')
+        description='Run a neverending metronome at a given BPM.')
     parser.add_argument('bpm',
         help='The target BPM of the metronome (e.g. 60).')
     args = parser.parse_args()
 
     m = Metronome(int(args.bpm), lambda:print(time(), flush=True))
+    print('Starting..', flush=True)
     m.start()

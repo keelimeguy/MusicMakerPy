@@ -16,11 +16,12 @@ class ProgressionGraph(WeightedDigraph):
         RARE=16
 
     class Position:
-        def __init__(self, name, root_step, base_adjust, opt_adjust):
+        def __init__(self, name, root_step, base_adjust='', opt_adjust='', step_adjust=0):
             self.name = name
             self.root_step = root_step
             self.base_adjust = base_adjust
             self.opt_adjust = opt_adjust
+            self.step_adjust = step_adjust
 
         def __str__(self):
             return self.name
@@ -29,19 +30,19 @@ class ProgressionGraph(WeightedDigraph):
             return str(self) < str(other)
 
         def get_base_pitch(self, scale):
-            return scale.get_pitch(self.root_step)
+            return scale.get_pitch(self.root_step).transpose(self.step_adjust)
 
         def get_base_chord(self, scale):
             if scale.root:
                 pitch = self.get_base_pitch(scale)
                 return Chord(pitch.name + self.base_adjust);
-            return (self.name, [self.root_step, self.base_adjust])
+            return (self.name, [str(self.root_step)+'('+str(self.step_adjust)+')', self.base_adjust])
 
         def get_adjusted_chord(self, scale, i):
             if scale.root:
                 pitch = self.get_base_pitch(scale)
                 return Chord(pitch.name + self.opt_adjust[i]);
-            return (self.name, [self.root_step, self.opt_adjust[i]])
+            return (self.name, [str(self.root_step)+'('+str(self.step_adjust)+')', self.opt_adjust[i]])
 
         def get_random_adjusted_chord(self, scale):
             i = random.randint(0, len(self.opt_adjust))

@@ -1,6 +1,5 @@
 import functools
-
-STANDARD_PITCH = 440
+import math
 
 NOTE_MAP = {
     'C':    12,       'B#':   12,       'Dbb':  12,
@@ -20,12 +19,13 @@ REV_NOTE_MAP = { 0: 'C', 1: 'Db', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F', 6: 'Gb', 7: '
 
 @functools.lru_cache(32)
 def freq_equal_temperament(n, base_freq):
-    return base_freq * 2^((n-69)/12)
+    return base_freq * 2.0**((n-69)/12.0)
 
 class Pitch:
-    def __init__(self, name='C', octave=4):
+    def __init__(self, name='C', octave=4, tuning=440):
         self.name = name
         self.octave = octave
+        self.tuning = tuning
         self.value = NOTE_MAP[name]+12*octave
 
     def __str__(self):
@@ -34,18 +34,13 @@ class Pitch:
     def __eq__(self, other):
         return self.value == other.value
 
-    def half_step(self, steps=1):
+    def transpose(self, steps=1):
         value = self.value + steps
-        octave = self.octave + int(steps/12)
-        change = steps - int(steps/12)*12 + (self.value%12)
-        if change > 11:
-            octave += 1
-        if change < 0:
-            octave -= 1
-        return Pitch(REV_NOTE_MAP[value%12], octave)
+        octave = self.octave + math.floor(((self.value%12)+steps)/12)
+        return Pitch(REV_NOTE_MAP[value%12], octave, self.tuning)
 
     def flat(self):
-        f = Pitch(self.name, self.octave)
+        f = Pitch(self.name, self.octave, self.tuning)
         f.name += 'b'
         f.value -= 1
         if f.value%12 == 11:
@@ -53,18 +48,19 @@ class Pitch:
         return f
 
     def sharp(self):
-        s = Pitch(self.name, self.octave)
+        s = Pitch(self.name, self.octave, self.tuning)
         s.name += '#'
         s.value += 1
         if s.value%12 == 0:
             s.octave += 1
         return s
 
+    # Used to convert note name to one in REV_NOTE_MAP
     def normal(self):
-        return Pitch(REV_NOTE_MAP[self.value%12], self.octave)
+        return Pitch(REV_NOTE_MAP[self.value%12], self.octave, self.tuning)
 
     def freq(self):
-        return freq_equal_temperament(self.value, STANDARD_PITCH)
+        return freq_equal_temperament(self.value, self.tuning)
 
     def set_octave(self, octave):
         self.octave = octave

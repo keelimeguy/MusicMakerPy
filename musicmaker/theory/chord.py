@@ -70,9 +70,9 @@ class Chord:
 
         # Add the appropriate third
         if kind == 'm' or kind == 'dim' or kind == 'mM':
-            self.add(root.half_step(major_mode.find_step(3)-1))
+            self.add(root.transpose(major_mode.find_step(3)-1))
         else:
-            self.add(root.half_step(major_mode.find_step(3)))
+            self.add(root.transpose(major_mode.find_step(3)))
 
         # Don't flatten seventh if major
         if kind == 'M' or kind == 'mM' or kind == 'maj':
@@ -80,15 +80,15 @@ class Chord:
 
         # Add the appropriate fifth
         if kind == 'dim':
-            self.add(root.half_step(major_mode.find_step(5)-1))
+            self.add(root.transpose(major_mode.find_step(5)-1))
 
             # Flatten seventh twice if diminished
             minor7 = 2
 
         elif kind == 'aug':
-            self.add(root.half_step(major_mode.find_step(5)+1))
+            self.add(root.transpose(major_mode.find_step(5)+1))
         else:
-            self.add(root.half_step(major_mode.find_step(5)))
+            self.add(root.transpose(major_mode.find_step(5)))
 
         if add:
             add_id = int(add)
@@ -96,25 +96,25 @@ class Chord:
             # # Implicitly add seventh when notes above seventh are added
             # if add_id > 7:
             #     if minor7 == 0:
-            #         self.add(root.half_step(major_mode.find_step(7)))
+            #         self.add(root.transpose(major_mode.find_step(7)))
             #     elif minor7 == 1:
-            #         self.add(root.half_step(major_mode.find_step(7)-1))
+            #         self.add(root.transpose(major_mode.find_step(7)-1))
             #     elif minor7 == 2:
-            #         self.add(root.half_step(major_mode.find_step(7)-2))
+            #         self.add(root.transpose(major_mode.find_step(7)-2))
 
             if add_id == 7 and minor7 == 1:
-                self.add(root.half_step(major_mode.find_step(add_id)-1))
+                self.add(root.transpose(major_mode.find_step(add_id)-1))
             elif add_id == 7 and minor7 == 2:
-                self.add(root.half_step(major_mode.find_step(add_id)-2))
+                self.add(root.transpose(major_mode.find_step(add_id)-2))
             else:
                 # # Add seventh when explicitly major
                 # if add_id != 7 and (kind == 'M' or kind == 'mM' or kind == 'maj'):
-                #     self.add(root.half_step(major_mode.find_step(7)))
-                self.add(root.half_step(major_mode.find_step(add_id)))
+                #     self.add(root.transpose(major_mode.find_step(7)))
+                self.add(root.transpose(major_mode.find_step(add_id)))
         else:
             # # Add seventh when explicitly major
             # if kind == 'M' or kind == 'mM' or kind == 'maj':
-            #     self.add(root.half_step(major_mode.find_step(7)))
+            #     self.add(root.transpose(major_mode.find_step(7)))
             pass
 
         if adjust:
@@ -141,7 +141,7 @@ class Chord:
                         elif no_arg[1] == '#':
                             base_step_adjust += 1
                     no_arg = re.sub(r'[#b]', '', no_arg)
-                    self.remove(root.half_step(major_mode.find_step(int(no_arg)) + base_step_adjust))
+                    self.remove(root.transpose(major_mode.find_step(int(no_arg)) + base_step_adjust))
 
             # Next deal with the suspended third so that thirds added later aren't overwritten
             sus_base = re.sub(r'(((##?|bb?)|(add|no)(##?|bb?)?)[0-9]+)*', '', adjust)
@@ -150,10 +150,10 @@ class Chord:
                     next_step = int(sus_split)
                     # Remove existing third to be suspended
                     if kind == 'm' or kind == 'dim':
-                        self.remove(root.half_step(major_mode.find_step(3)-1))
+                        self.remove(root.transpose(major_mode.find_step(3)-1))
                     else:
-                        self.remove(root.half_step(major_mode.find_step(3)))
-                    self.add(root.half_step(major_mode.find_step(next_step)))
+                        self.remove(root.transpose(major_mode.find_step(3)))
+                    self.add(root.transpose(major_mode.find_step(next_step)))
 
             # Deal with sharps
             sharp_base = re.sub(r'(((bb?|(add|no)(##?|bb?)?)[0-9]+)|sus[24])*', '', adjust)
@@ -163,14 +163,14 @@ class Chord:
                     if sharp_split[1] == '#':
                         sharp_step_adjust = 2
                     sharp_split = re.sub('#', '', sharp_split)
-                    new_note = root.half_step(major_mode.find_step(int(sharp_split)))
+                    new_note = root.transpose(major_mode.find_step(int(sharp_split)))
                     # Remove existing note to be sharpened
                     self.remove(new_note)
                     if new_note == root:
-                        root = new_note.half_step(sharp_step_adjust)
+                        root = new_note.transpose(sharp_step_adjust)
                         self.add(root)
                     else:
-                        self.add(new_note.half_step(sharp_step_adjust))
+                        self.add(new_note.transpose(sharp_step_adjust))
 
             # Deal with flats
             flat_base = re.sub(r'(((##?|(add|no)(##?|bb?)?)[0-9]+)|sus[24])*', '', adjust)
@@ -180,16 +180,16 @@ class Chord:
                     if flat_split[1] == 'b':
                         flat_step_adjust = -2
                     flat_split = re.sub('b', '', flat_split)
-                    new_note = root.half_step(major_mode.find_step(int(flat_split)))
+                    new_note = root.transpose(major_mode.find_step(int(flat_split)))
                     # Remove existing note to be flattened
                     self.remove(new_note)
                     if new_note == root:
-                        root = new_note.half_step(flat_step_adjust)
+                        root = new_note.transpose(flat_step_adjust)
                         self.add(root)
                     else:
-                        self.add(new_note.half_step(flat_step_adjust))
+                        self.add(new_note.transpose(flat_step_adjust))
 
-        bass_note = root.half_step(0)
+        bass_note = root.transpose(0)
 
         if len(bass) > 1:
             step_adjust = 0
@@ -205,7 +205,7 @@ class Chord:
             bass_id = re.sub(r'/(##?|bb?)?', '', bass)
 
             if bass_id[0] >= '0' and bass_id[0] <= '9':
-                bass_note = root.half_step(major_mode.find_step(int(bass_id)) + step_adjust)
+                bass_note = root.transpose(major_mode.find_step(int(bass_id)) + step_adjust)
             else:
                 bass_note = Pitch(bass_id, root.octave)
                 bass_note.set_octave(root.octave+1 if bass_note.value < root.value else root.octave)
@@ -237,7 +237,7 @@ class Chord:
                         elif add_arg[1] == '#':
                             base_step_adjust += 1
                     add_arg = re.sub(r'[#b]', '', add_arg)
-                    self.add(root.half_step(major_mode.find_step(int(add_arg)) + base_step_adjust))
+                    self.add(root.transpose(major_mode.find_step(int(add_arg)) + base_step_adjust))
 
         self.notes.sort(key=lambda el: el.value)
         self.valid = True

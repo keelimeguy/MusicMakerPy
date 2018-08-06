@@ -23,26 +23,26 @@ class MajorProgression(ProgressionGraph):
         # Mb9no7 used in opt_adjust instead of b9 to avoid conflicts with e.g. Bb 9 and B b9
         'IIIm7b5':    ProgressionGraph.Position('IIIm7b5', 3, 'm7b5', []),
         'VI':         ProgressionGraph.Position('VI', 6, '', ['7', '9', 'Mb9no7']),
-        '#Idim7':     ProgressionGraph.Position('#Idim7', 1.5, 'dim7', []),
-        '#IVm7b5':    ProgressionGraph.Position('#IVm7b5', 4.5, 'm7b5', []),
+        '#Idim7':     ProgressionGraph.Position('#Idim7', 1, 'dim7', [], 1),
+        '#IVm7b5':    ProgressionGraph.Position('#IVm7b5', 4, 'm7b5', [], 1),
         'VII':        ProgressionGraph.Position('VII', 7, '', ['7', '9', 'Mb9no7']),
-        '#IIdim7':    ProgressionGraph.Position('#IIdim7', 2.5, 'dim7', []),
+        '#IIdim7':    ProgressionGraph.Position('#IIdim7', 2, 'dim7', [], 1),
         'Vm':         ProgressionGraph.Position('Vm', 5, 'm', ['7']),
         'I*':         ProgressionGraph.Position('I*', 1, '7', ['7', '9', 'Mb9no7']),
         'Im6':        ProgressionGraph.Position('Im6', 1, 'm6', []),
         'V/2':        ProgressionGraph.Position('V/2', 5, '/2', []),
         'II':         ProgressionGraph.Position('II', 2, '', ['7', '9', 'Mb9no7']),
-        'bVI':        ProgressionGraph.Position('bVI', -6.5, '', []),
-        'bVII':       ProgressionGraph.Position('bVII', -7.5, '', ['9']),
+        'bVI':        ProgressionGraph.Position('bVI', 6, '', [], -1),
+        'bVII':       ProgressionGraph.Position('bVII', 7, '', ['9'], -1),
         'IVm7':       ProgressionGraph.Position('IVm7', 4, 'm7', []),
-        'bII7':       ProgressionGraph.Position('bII7', -2.5, '7', []),
+        'bII7':       ProgressionGraph.Position('bII7', 2, '7', [], -1),
         'VIm7b5/b3':  ProgressionGraph.Position('VIm7b5/b3', 6, 'm7b5/b3', []),
-        '#Vdim7':     ProgressionGraph.Position('#Vdim7', 5.5, 'dim7', []),
+        '#Vdim7':     ProgressionGraph.Position('#Vdim7', 5, 'dim7', [], 1),
         'VIIm7b5':    ProgressionGraph.Position('VIIm7b5', 7, 'm7b5', []),
         'III':        ProgressionGraph.Position('III', 3, '', ['7', '9', 'Mb9no7']),
         'Idim/b3':    ProgressionGraph.Position('Idim/b3', 1, 'dim/b3', []),
-        'bVI7':       ProgressionGraph.Position('bVI7', -6.5, '7', []),
-        'bVII9':      ProgressionGraph.Position('bVII9', -7.5, '9', [])
+        'bVI7':       ProgressionGraph.Position('bVI7', 6, '7', [], -1),
+        'bVII9':      ProgressionGraph.Position('bVII9', 7, '9', [], -1)
     }
 
     def __init__(self, root=None, start=None):

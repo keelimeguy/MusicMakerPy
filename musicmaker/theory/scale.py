@@ -53,7 +53,7 @@ class Scale:
         'Minor':         Mode('Minor', [0, 2, 3, 5, 7, 8, 10 ]),
         'NaturalMinor':  Mode('NaturalMinor', [0, 2, 3, 5, 7, 8, 10 ]),
         'HarmonicMinor': Mode('HarmonicMinor', [ 0, 2, 3, 5, 7, 8, 11 ]),
-        'MelodicMinor':  Mode('MelodicMinor', [ 0, 2, 3, 5, 7, 9, 11 ], [ 10, 8, 6, 5, 3, 2, 0 ]),
+        'MelodicMinor':  Mode('MelodicMinor', [ 0, 2, 3, 5, 7, 9, 11 ], [ 10, 8, 7, 5, 3, 2, 0 ]),
 
         # Foreign scales from www.medianmusic.com/ScaleForeign.html
         'Algerian':  Mode('Algerian', [ 0, 2, 3, 5, 6, 7, 8, 11 ]),
@@ -120,30 +120,22 @@ class Scale:
 
     def __init__(self, root, mode):
         self.root = root
-        self.mode = None
-        self.valid = False
-
-        if mode in self.modes:
+        if isinstance(mode, str):
             self.mode = self.modes[mode]
-            self.valid = True
+        else:
+            self.mode = mode
 
     def __str__(self):
         return (str(self.root)+' ' if self.root else '') + self.mode.name
 
     def show(self):
         if self.root:
-            print(str(self), ':', [str(self.root.half_step(interval)) for interval in self.mode.ascending+[12]+self.mode.descending])
+            print(str(self), ':', [str(self.root.transpose(interval)) for interval in self.mode.ascending+[12]+self.mode.descending])
         else:
             print(str(self), ':', self.mode.ascending+[12]+self.mode.descending)
 
     def get_pitch(self, num):
-        pitch = self.root.half_step(self.mode.find_step(int(abs(num))))
-        if int(abs(num)) != num:
-            if num < 0:
-                pitch = pitch.half_step(-1)
-            else:
-                pitch = pitch.half_step(1)
-        return pitch
+        return self.root.transpose(self.mode.find_step(num))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(

@@ -7,6 +7,9 @@ This program is an inspired rewrite of my [java implementation](https://github.c
 
 ## Usage
 
+### Testing
+`python -m unittest`
+
 ### Compiling
 Todo
 

@@ -1,6 +1,7 @@
 import argparse
 import pyaudio
 import struct
+import numpy
 import math
 import wave
 import sys
@@ -8,15 +9,17 @@ import sys
 from .synth import Synth
 
 class Wav:
-    def __init__(self, sample_rate=44100.0):
+    def __init__(self, sample_rate=44100):
         self.audio = []
         self.sample_rate = sample_rate
+        self.synth = Synth(sample_rate)
 
     def add_rest(self, duration_ms=500):
-        self.audio += Synth.rest(duration_ms=duration_ms, sample_rate=self.sample_rate)
+        num_samples = int(self.sample_rate * (duration_ms / 1000.0))
+        self.audio.append(numpy.sin(numpy.zeros(num_samples)))
 
-    def add_sine(self, freq=440.0, duration_ms=500, volume=1.0):
-        self.audio += Synth.sine_tone(freq=freq, duration_ms=duration_ms, volume=volume, sample_rate=self.sample_rate)
+    def append_sound(self, audio):
+        self.audio.append(audio)
 
     def save(self, file_name):
         wav_file = wave.open(file_name,'w')
@@ -29,9 +32,10 @@ class Wav:
         wav_file.setparams((nchannels, sampwidth, self.sample_rate, nframes, comptype, compname))
 
         # (short) 16-bit signed integers for the sample size
-        # 32767 is the maximum value for a short integer.
-        for sample in self.audio:
-            wav_file.writeframes(struct.pack('h', int( sample * 32767.0 )))
+        #   [32767 is the maximum value for a short integer.]
+        chunk = numpy.concatenate(self.audio)
+        chunk = numpy.vectorize(lambda sample: struct.pack('h', int( sample * 32767.0 )))(chunk)
+        wav_file.writeframes(chunk)
 
         wav_file.close()
         return
@@ -39,14 +43,14 @@ class Wav:
     def play(self):
         p = pyaudio.PyAudio()
         stream = p.open(
-            format=p.get_format_from_width(2),
+            format=pyaudio.paFloat32,
             channels=1,
             rate=self.sample_rate,
             output=True
         )
 
-        for sample in self.audio:
-            stream.write(struct.pack('h', int( sample * 32767.0 )))
+        chunk = numpy.concatenate(self.audio)
+        stream.write(chunk.astype(numpy.float32).tostring())
 
         stream.stop_stream()
         stream.close()
@@ -94,11 +98,13 @@ if __name__ == '__main__':
 
     if args.output or args.generate:
         wav = Wav(88200)
-        wav.add_sine(440.0, 1000, 1)
+        sound1 = wav.synth.chime
+        sound2 = wav.synth.chime_soft
+        wav.append_sound(wav.synth.chord([440.00], sound2)+wav.synth.chord([440.00], sound1))
+        wav.append_sound(wav.synth.chord([440.00, 493.88], sound2)+wav.synth.chord([493.88], sound1))
+        wav.append_sound(wav.synth.chord([440.00, 493.88, 554.37], sound2)+wav.synth.chord([554.37], sound1))
+        wav.append_sound(wav.synth.chord([440.00, 493.88, 554.37, 880.0], sound2)+wav.synth.chord([880.0], sound1))
         wav.add_rest()
-        wav.add_sine(220.0, 500, 1)
-        wav.add_rest()
-        wav.add_sine(880.0, 500, 1)
 
         if args.output:
             print('Saving to', args.output, flush=True)
