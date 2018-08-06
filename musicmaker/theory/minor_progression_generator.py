@@ -1,50 +1,51 @@
 import argparse
 import sys
 
-from .progressiongraph import ProgressionGraph
+from musicmaker.sound.staffplayer import StaffPlayer
+from .progression_generator import ProgressionGenerator
 from .scale import Scale
 from .pitch import Pitch
 
 # Based on http://mugglinworks.com/chordmaps/GenericMapMinor.pdf
 # Defined here in order: blue top to bottom, left green top to bottom, then right green top to bottom
-class MinorProgression(ProgressionGraph):
+class MinorProgression(ProgressionGenerator):
     position_dict = {
         # Mb9no7 used in opt_adjust instead of b9 to avoid conflicts with e.g. Bb 9 and B b9
-        'iidim':      ProgressionGraph.Position('iidim', 2, 'dim', []),
-        'viidim/2':   ProgressionGraph.Position('viidim/2', 7, 'dim/2', []),
-        'V':          ProgressionGraph.Position('V', 5, '', ['7','Mb9no7','Mb13no7','sus4']),
-        'bIIIaug':    ProgressionGraph.Position('bIIIaug', 3, 'aug', [], -1),
-        'im/b3':      ProgressionGraph.Position('im/b3', 1, 'm/b3', []),
-        'bVI':        ProgressionGraph.Position('bVI', 6, '', ['6', 'M7'], -1),
-        'ivm/b6':     ProgressionGraph.Position('ivm/b6', 4, 'm/b6', ['m6/b6', 'm7/b6']),
-        'ivm':        ProgressionGraph.Position('ivm', 4, 'm', ['m6', 'm7', 'm9']),
-        'bII/4':      ProgressionGraph.Position('bII/4', 2, '/4', [], -1),
-        'im/b3':      ProgressionGraph.Position('im/b3', 1, 'm/b3', []),
-        'im/5':       ProgressionGraph.Position('im/5', 1, 'm/5', []),
-        'im':         ProgressionGraph.Position('im', 1, 'm', ['2','sus4']),
-        'ivm/1':      ProgressionGraph.Position('ivm/1', 4, 'm/1', []),
-        'V/1':        ProgressionGraph.Position('V/1', 5, '/1', []),
+        'iidim':      ProgressionGenerator.Position('iidim', 2, 'dim', []),
+        'viidim/2':   ProgressionGenerator.Position('viidim/2', 7, 'dim/2', []),
+        'V':          ProgressionGenerator.Position('V', 5, '', ['7','Mb9no7','Mb13no7','sus4']),
+        'bIIIaug':    ProgressionGenerator.Position('bIIIaug', 3, 'aug', [], -1),
+        'im/b3':      ProgressionGenerator.Position('im/b3', 1, 'm/b3', []),
+        'bVI':        ProgressionGenerator.Position('bVI', 6, '', ['6', 'M7'], -1),
+        'ivm/b6':     ProgressionGenerator.Position('ivm/b6', 4, 'm/b6', ['m6/b6', 'm7/b6']),
+        'ivm':        ProgressionGenerator.Position('ivm', 4, 'm', ['m6', 'm7', 'm9']),
+        'bII/4':      ProgressionGenerator.Position('bII/4', 2, '/4', [], -1),
+        'im/b3':      ProgressionGenerator.Position('im/b3', 1, 'm/b3', []),
+        'im/5':       ProgressionGenerator.Position('im/5', 1, 'm/5', []),
+        'im':         ProgressionGenerator.Position('im', 1, 'm', ['2','sus4']),
+        'ivm/1':      ProgressionGenerator.Position('ivm/1', 4, 'm/1', []),
+        'V/1':        ProgressionGenerator.Position('V/1', 5, '/1', []),
 
-        'iidim7':     ProgressionGraph.Position('iidim7', 2, 'dim7', []),
-        'V*':         ProgressionGraph.Position('V*', 5, '', ['7', 'Mb9no7']),
-        'Vdim7':      ProgressionGraph.Position('Vdim7', 5, 'dim7', ['7', 'm7b5']),
-        'iiidim7':    ProgressionGraph.Position('iiidim7', 3, 'dim7', []),
-        'I':          ProgressionGraph.Position('I', 1, '', ['7', 'Mb9no7']),
-        '#ivdim7':    ProgressionGraph.Position('#ivdim7', 4, 'dim7', [], 1),
-        'vim7b5':     ProgressionGraph.Position('vim7b5', 6, 'm7b5', []),
-        'II':         ProgressionGraph.Position('II', 2, '', ['7', 'Mb9no7']),
-        'bVI*':       ProgressionGraph.Position('bVI*', 6, '', [], -1),
-        'bVII':       ProgressionGraph.Position('bVII', 7, '', ['9'], -1),
-        'ivm7':       ProgressionGraph.Position('ivm7', 4, 'm7', []),
-        'Vm7b5':      ProgressionGraph.Position('Vm7b5', 5, 'm7b5', ['dim7']),
-        'bIII':       ProgressionGraph.Position('bIII', 3, '', ['7', '9', 'Mb9no7'], -1),
-        'bviim7b5':   ProgressionGraph.Position('bviim7b5', 7, 'm7b5', [], -1),
-        'bVI7':       ProgressionGraph.Position('bVI7', 6, '7', [], -1)
+        'iidim7':     ProgressionGenerator.Position('iidim7', 2, 'dim7', []),
+        'V*':         ProgressionGenerator.Position('V*', 5, '', ['7', 'Mb9no7']),
+        'Vdim7':      ProgressionGenerator.Position('Vdim7', 5, 'dim7', ['7', 'm7b5']),
+        'iiidim7':    ProgressionGenerator.Position('iiidim7', 3, 'dim7', []),
+        'I':          ProgressionGenerator.Position('I', 1, '', ['7', 'Mb9no7']),
+        '#ivdim7':    ProgressionGenerator.Position('#ivdim7', 4, 'dim7', [], 1),
+        'vim7b5':     ProgressionGenerator.Position('vim7b5', 6, 'm7b5', []),
+        'II':         ProgressionGenerator.Position('II', 2, '', ['7', 'Mb9no7']),
+        'bVI*':       ProgressionGenerator.Position('bVI*', 6, '', [], -1),
+        'bVII':       ProgressionGenerator.Position('bVII', 7, '', ['9'], -1),
+        'ivm7':       ProgressionGenerator.Position('ivm7', 4, 'm7', []),
+        'Vm7b5':      ProgressionGenerator.Position('Vm7b5', 5, 'm7b5', ['dim7']),
+        'bIII':       ProgressionGenerator.Position('bIII', 3, '', ['7', '9', 'Mb9no7'], -1),
+        'bviim7b5':   ProgressionGenerator.Position('bviim7b5', 7, 'm7b5', [], -1),
+        'bVI7':       ProgressionGenerator.Position('bVI7', 6, '7', [], -1)
     }
 
     def __init__(self, root=None, start=None):
         resolve = self.position_dict['im']
-        ProgressionGraph.__init__(self, Scale(root, 'Minor'), resolve, start)
+        ProgressionGenerator.__init__(self, Scale(root, 'Minor'), resolve, start)
         self.setup()
 
     def setup(self):
@@ -128,6 +129,8 @@ if __name__ == '__main__':
         help='The root of the minor progression (e.g. C, Bb, F#).')
     parser.add_argument('-g', '--generate',
         help='Generate a minor progression with the given length.')
+    parser.add_argument('-p', '--play', action='store_true',
+        help='Play the generated minor progression.')
     args = parser.parse_args()
 
     if args.root:
@@ -139,6 +142,13 @@ if __name__ == '__main__':
         p = MinorProgression();
 
     if args.generate:
-        p.generate(int(args.generate)).show()
+        progression = p.generate(int(args.generate))
+        progression.show()
     else:
         p.show();
+
+    if args.play and args.generate and args.root:
+        print('looping..', flush=True)
+        player = StaffPlayer(progression)
+        player.add_sound(1, player.synth.chime)
+        player.play()

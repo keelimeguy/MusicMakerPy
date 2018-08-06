@@ -1,6 +1,8 @@
 import argparse
 import re
 
+from musicmaker.sound.staffplayer import StaffPlayer
+from .staff import Staff
 from .scale import Scale
 from .pitch import Pitch
 
@@ -268,10 +270,21 @@ if __name__ == '__main__':
         description='Find the notes of a given chord.')
     parser.add_argument('chord',
         help='The target chord in standard format (e.g. Ebdim7, C#sus4, C#sus4#5/A).')
+    parser.add_argument('-p', '--play', action='store_true',
+        help='Play the given chord.')
     args = parser.parse_args()
 
     c = Chord(args.chord)
     if c.valid:
         c.show()
+
+        if args.play:
+            staff = Staff()
+            staff.add([note for note in c.notes], 4)
+
+            print('playing..', flush=True)
+            player = StaffPlayer(staff)
+            player.play()
+
     else:
         print("Chord must match regex:", REDUCED_CHORD_REGEX)

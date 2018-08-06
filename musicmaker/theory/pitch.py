@@ -62,9 +62,15 @@ class Pitch:
     def freq(self):
         return freq_equal_temperament(self.value, self.tuning)
 
+    def raise_octave(self, steps=1):
+        self.octave += steps
+        self.value = self.value%12 + 12 + self.octave*12
+        return self
+
     def set_octave(self, octave):
         self.octave = octave
         self.value = self.value%12 + 12 + octave*12
+        return self
 
     def valid(name):
         return name in NOTE_MAP

@@ -1,53 +1,54 @@
 import argparse
 import sys
 
-from .progressiongraph import ProgressionGraph
+from musicmaker.sound.staffplayer import StaffPlayer
+from .progression_generator import ProgressionGenerator
 from .scale import Scale
 from .pitch import Pitch
 
 # Based on http://mugglinworks.com/chordmaps/GenericMap.pdf
 # Defined here in order: blue top to bottom, left green top to bottom, then right green top to bottom
-class MajorProgression(ProgressionGraph):
+class MajorProgression(ProgressionGenerator):
     position_dict = {
-        'iim':        ProgressionGraph.Position('iim', 2, 'm', ['m7','m9']),
-        'V':          ProgressionGraph.Position('V', 5, '', ['7','9','11','13','sus4']),
-        'iiim':       ProgressionGraph.Position('iiim', 3, 'm', ['m7']),
-        'vim':        ProgressionGraph.Position('vim', 6, 'm', ['m7', 'm9']),
-        'IV':         ProgressionGraph.Position('IV', 4, '', ['6', 'M7', 'm', 'm6']),
-        'I/3':        ProgressionGraph.Position('I/3', 1, '/3', []),
-        'I/5':        ProgressionGraph.Position('I/5', 1, '/5', []),
-        'I':          ProgressionGraph.Position('I', 1, '', ['2','6','M7','M9','sus4']),
-        'IV/1':       ProgressionGraph.Position('IV/1', 4, '/1', []),
-        'V/1':        ProgressionGraph.Position('V/1', 5, '/1', []),
+        'iim':        ProgressionGenerator.Position('iim', 2, 'm', ['m7','m9']),
+        'V':          ProgressionGenerator.Position('V', 5, '', ['7','9','11','13','sus4']),
+        'iiim':       ProgressionGenerator.Position('iiim', 3, 'm', ['m7']),
+        'vim':        ProgressionGenerator.Position('vim', 6, 'm', ['m7', 'm9']),
+        'IV':         ProgressionGenerator.Position('IV', 4, '', ['6', 'M7', 'm', 'm6']),
+        'I/3':        ProgressionGenerator.Position('I/3', 1, '/3', []),
+        'I/5':        ProgressionGenerator.Position('I/5', 1, '/5', []),
+        'I':          ProgressionGenerator.Position('I', 1, '', ['2','6','M7','M9','sus4']),
+        'IV/1':       ProgressionGenerator.Position('IV/1', 4, '/1', []),
+        'V/1':        ProgressionGenerator.Position('V/1', 5, '/1', []),
 
         # Mb9no7 used in opt_adjust instead of b9 to avoid conflicts with e.g. Bb 9 and B b9
-        'IIIm7b5':    ProgressionGraph.Position('IIIm7b5', 3, 'm7b5', []),
-        'VI':         ProgressionGraph.Position('VI', 6, '', ['7', '9', 'Mb9no7']),
-        '#Idim7':     ProgressionGraph.Position('#Idim7', 1, 'dim7', [], 1),
-        '#IVm7b5':    ProgressionGraph.Position('#IVm7b5', 4, 'm7b5', [], 1),
-        'VII':        ProgressionGraph.Position('VII', 7, '', ['7', '9', 'Mb9no7']),
-        '#IIdim7':    ProgressionGraph.Position('#IIdim7', 2, 'dim7', [], 1),
-        'Vm':         ProgressionGraph.Position('Vm', 5, 'm', ['7']),
-        'I*':         ProgressionGraph.Position('I*', 1, '7', ['7', '9', 'Mb9no7']),
-        'Im6':        ProgressionGraph.Position('Im6', 1, 'm6', []),
-        'V/2':        ProgressionGraph.Position('V/2', 5, '/2', []),
-        'II':         ProgressionGraph.Position('II', 2, '', ['7', '9', 'Mb9no7']),
-        'bVI':        ProgressionGraph.Position('bVI', 6, '', [], -1),
-        'bVII':       ProgressionGraph.Position('bVII', 7, '', ['9'], -1),
-        'IVm7':       ProgressionGraph.Position('IVm7', 4, 'm7', []),
-        'bII7':       ProgressionGraph.Position('bII7', 2, '7', [], -1),
-        'VIm7b5/b3':  ProgressionGraph.Position('VIm7b5/b3', 6, 'm7b5/b3', []),
-        '#Vdim7':     ProgressionGraph.Position('#Vdim7', 5, 'dim7', [], 1),
-        'VIIm7b5':    ProgressionGraph.Position('VIIm7b5', 7, 'm7b5', []),
-        'III':        ProgressionGraph.Position('III', 3, '', ['7', '9', 'Mb9no7']),
-        'Idim/b3':    ProgressionGraph.Position('Idim/b3', 1, 'dim/b3', []),
-        'bVI7':       ProgressionGraph.Position('bVI7', 6, '7', [], -1),
-        'bVII9':      ProgressionGraph.Position('bVII9', 7, '9', [], -1)
+        'IIIm7b5':    ProgressionGenerator.Position('IIIm7b5', 3, 'm7b5', []),
+        'VI':         ProgressionGenerator.Position('VI', 6, '', ['7', '9', 'Mb9no7']),
+        '#Idim7':     ProgressionGenerator.Position('#Idim7', 1, 'dim7', [], 1),
+        '#IVm7b5':    ProgressionGenerator.Position('#IVm7b5', 4, 'm7b5', [], 1),
+        'VII':        ProgressionGenerator.Position('VII', 7, '', ['7', '9', 'Mb9no7']),
+        '#IIdim7':    ProgressionGenerator.Position('#IIdim7', 2, 'dim7', [], 1),
+        'Vm':         ProgressionGenerator.Position('Vm', 5, 'm', ['7']),
+        'I*':         ProgressionGenerator.Position('I*', 1, '7', ['7', '9', 'Mb9no7']),
+        'Im6':        ProgressionGenerator.Position('Im6', 1, 'm6', []),
+        'V/2':        ProgressionGenerator.Position('V/2', 5, '/2', []),
+        'II':         ProgressionGenerator.Position('II', 2, '', ['7', '9', 'Mb9no7']),
+        'bVI':        ProgressionGenerator.Position('bVI', 6, '', [], -1),
+        'bVII':       ProgressionGenerator.Position('bVII', 7, '', ['9'], -1),
+        'IVm7':       ProgressionGenerator.Position('IVm7', 4, 'm7', []),
+        'bII7':       ProgressionGenerator.Position('bII7', 2, '7', [], -1),
+        'VIm7b5/b3':  ProgressionGenerator.Position('VIm7b5/b3', 6, 'm7b5/b3', []),
+        '#Vdim7':     ProgressionGenerator.Position('#Vdim7', 5, 'dim7', [], 1),
+        'VIIm7b5':    ProgressionGenerator.Position('VIIm7b5', 7, 'm7b5', []),
+        'III':        ProgressionGenerator.Position('III', 3, '', ['7', '9', 'Mb9no7']),
+        'Idim/b3':    ProgressionGenerator.Position('Idim/b3', 1, 'dim/b3', []),
+        'bVI7':       ProgressionGenerator.Position('bVI7', 6, '7', [], -1),
+        'bVII9':      ProgressionGenerator.Position('bVII9', 7, '9', [], -1)
     }
 
     def __init__(self, root=None, start=None):
         resolve = self.position_dict['I']
-        ProgressionGraph.__init__(self, Scale(root, 'Major'), resolve, start)
+        ProgressionGenerator.__init__(self, Scale(root, 'Major'), resolve, start)
         self.setup()
 
     def setup(self):
@@ -136,6 +137,8 @@ if __name__ == '__main__':
         help='The root of the major progression (e.g. C, Bb, F#).')
     parser.add_argument('-g', '--generate',
         help='Generate a major progression with the given length.')
+    parser.add_argument('-p', '--play', action='store_true',
+        help='Play the generated major progression.')
     args = parser.parse_args()
 
     if args.root:
@@ -147,6 +150,13 @@ if __name__ == '__main__':
         p = MajorProgression();
 
     if args.generate:
-        p.generate(int(args.generate)).show()
+        progression = p.generate(int(args.generate))
+        progression.show()
     else:
         p.show();
+
+    if args.play and args.generate and args.root:
+        print('looping..', flush=True)
+        player = StaffPlayer(progression)
+        player.add_sound(1, player.synth.chime)
+        player.play()

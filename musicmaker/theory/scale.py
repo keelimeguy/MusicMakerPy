@@ -1,6 +1,9 @@
 import argparse
+import random
 import sys
 
+from musicmaker.sound.staffplayer import StaffPlayer
+from .staff import Staff
 from .pitch import Pitch
 
 class Scale:
@@ -128,6 +131,9 @@ class Scale:
     def __str__(self):
         return (str(self.root)+' ' if self.root else '') + self.mode.name
 
+    def __len__(self):
+        return len(self.mode.ascending)
+
     def show(self):
         if self.root:
             print(str(self), ':', [str(self.root.transpose(interval)) for interval in self.mode.ascending+[12]+self.mode.descending])
@@ -142,21 +148,40 @@ if __name__ == '__main__':
         description='Find the given scale.')
     parser.add_argument('-r', '--root',
         help='The root for the scale (e.g. C, Bb, F#).')
-    parser.add_argument('mode',
+    parser.add_argument('-p', '--play', action='store_true',
+        help='Play the given scale.')
+    parser.add_argument('-m', '--mode',
         help='The target mode for the scale (e.g. Major, TriTone, BebopLydianDominant).')
     args = parser.parse_args()
 
     s = None
-    if args.mode in Scale.modes:
-        if args.root and Pitch.valid(args.root):
-            s = Scale(Pitch(args.root), args.mode)
-        elif args.root:
-            print('Valid roots are', [root for root in Pitch.notes()])
-            sys.exit()
+    if args.mode:
+        if args.mode in Scale.modes:
+            mode = args.mode
         else:
-            s = Scale(None, args.mode)
+            print('Valid modes are', [mode for mode in Scale.modes])
+            sys.exit()
     else:
-        print('Valid modes are', [mode for mode in Scale.modes])
-        sys.exit()
+        mode = random.randrange(0,len(Scale.modes))
+        mode = list(Scale.modes)[mode]
 
-    s.show()
+    if args.root and Pitch.valid(args.root):
+        scale = Scale(Pitch(args.root), mode)
+    elif args.root:
+        print('Valid roots are', [root for root in Pitch.notes()])
+        sys.exit()
+    else:
+        scale = Scale(None, mode)
+
+    scale.show()
+
+    if args.play and args.root:
+        staff = Staff()
+        for i in range(1, len(scale)+2):
+            staff.add([scale.get_pitch(i)], 1)
+        for i in range(-1, -len(scale)-1, -1):
+            staff.add([scale.get_pitch(i).raise_octave()], 1)
+
+        print('playing..', flush=True)
+        player = StaffPlayer(staff)
+        player.play()

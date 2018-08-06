@@ -22,6 +22,8 @@ Todo
 
 `python -m musicmaker.sound.wav -h`
 
-`python -m musicmaker.theory.majorprogression -h`
+`python -m musicmaker.sound.staffplayer -h`
 
-`python -m musicmaker.theory.minorprogression -h`
+`python -m musicmaker.theory.major_progression_generator -h`
+
+`python -m musicmaker.theory.minor_progression_generator -h`

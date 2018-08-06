@@ -33,14 +33,14 @@ class Wav:
 
         # (short) 16-bit signed integers for the sample size
         #   [32767 is the maximum value for a short integer.]
-        chunk = numpy.concatenate(self.audio)
+        chunk = numpy.concatenate(self.audio) * 0.25
         chunk = numpy.vectorize(lambda sample: struct.pack('h', int( sample * 32767.0 )))(chunk)
         wav_file.writeframes(chunk)
 
         wav_file.close()
         return
 
-    def play(self):
+    def play(self, loop=False):
         p = pyaudio.PyAudio()
         stream = p.open(
             format=pyaudio.paFloat32,
@@ -49,16 +49,23 @@ class Wav:
             output=True
         )
 
-        chunk = numpy.concatenate(self.audio)
-        stream.write(chunk.astype(numpy.float32).tostring())
+        chunk = numpy.concatenate(self.audio) * 0.25
+        chunk = chunk.astype(numpy.float32).tostring()
+
+        if loop:
+            while(1):
+                stream.write(chunk)
+
+        stream.write(chunk)
 
         stream.stop_stream()
         stream.close()
 
         p.terminate()
 
-    def play_file(file):
-        CHUNK = 1024
+    @classmethod
+    def play_file(cls, file):
+        chunk_size = 1024
 
         wf = wave.open(file, 'rb')
 
@@ -71,10 +78,10 @@ class Wav:
             output=True
         )
 
-        data = wf.readframes(CHUNK)
+        data = wf.readframes(chunk_size)
         while data != b'':
             stream.write(data)
-            data = wf.readframes(CHUNK)
+            data = wf.readframes(chunk_size)
 
         stream.stop_stream()
         stream.close()

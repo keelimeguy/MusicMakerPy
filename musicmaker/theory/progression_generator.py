@@ -4,7 +4,7 @@ from ..structure.weighteddigraph import WeightedDigraph
 from .chord import Chord
 from .progression import Progression
 
-class ProgressionGraph(WeightedDigraph):
+class ProgressionGenerator(WeightedDigraph):
     position_dict = {}
 
     class Weight:
@@ -83,7 +83,7 @@ class ProgressionGraph(WeightedDigraph):
         self.scale = scale
 
     def generate(self, length=4, loop=True, ext=True):
-        p = Progression(loop=loop)
+        p = Progression(loop=loop, tempo=60)
         cur = self.start
         p.add(cur.value.get_base_chord(self.scale))
         for i in range(length-1):
