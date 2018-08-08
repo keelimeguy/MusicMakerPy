@@ -30,9 +30,13 @@ class Pitch:
 
     def __str__(self):
         return self.name + str(self.octave)
+    __repr__ = __str__
 
     def __eq__(self, other):
         return self.value == other.value
+
+    def note_kind_equals(self, other):
+        return self.value%12 == other.value%12
 
     def transpose(self, steps=1):
         value = self.value + steps

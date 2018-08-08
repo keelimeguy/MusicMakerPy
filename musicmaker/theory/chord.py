@@ -280,7 +280,7 @@ if __name__ == '__main__':
 
         if args.play:
             staff = Staff()
-            staff.add([note for note in c.notes], 4)
+            staff.add(c.notes, 4)
 
             print('playing..', flush=True)
             player = StaffPlayer(staff)

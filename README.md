@@ -26,3 +26,7 @@ This program is an inspired rewrite of my [java implementation](https://github.c
 `python -m musicmaker.theory.major_progression_generator -h`
 
 `python -m musicmaker.theory.minor_progression_generator -h`
+
+`python -m musicmaker.theory.instrument.ukulele -h`
+
+`python -m musicmaker.theory.instrument.guitar -h`
