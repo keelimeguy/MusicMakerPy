@@ -8,11 +8,26 @@ from .pitch import Pitch
 
 class Scale:
     class Mode:
-        def __init__(self, name, ascending, descending=None):
+        def __init__(self, name, ascending, descending=None, as_intervals=False):
             self.name = name
-            self.ascending = ascending
+            if as_intervals:
+                cur = 0
+                self.ascending = [0]
+                for interval in ascending:
+                    cur += interval
+                    if interval > 0 and cur < 12:
+                        self.ascending.append(cur)
+            else:
+                self.ascending = ascending
             if descending == None:
-                self.descending = ascending[::-1]
+                self.descending = self.ascending[::-1]
+            elif as_intervals:
+                cur = 0
+                self.descending = [0]
+                for interval in descending[::-1]:
+                    cur += interval
+                    if interval > 0 and cur < 12:
+                        self.descending.insert(0, cur)
             else:
                 self.descending = descending
 

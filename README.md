@@ -6,11 +6,11 @@ This program is an inspired rewrite of my [java implementation](https://github.c
 
 ## Usage
 
+### Compiling
+`pip install -r requirements.txt`
+
 ### Testing
 `python -m unittest`
-
-### Compiling
-Todo
 
 ### Command line
 `python -m musicmaker.theory.chord -h`
