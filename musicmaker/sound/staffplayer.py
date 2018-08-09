@@ -25,7 +25,9 @@ class StaffPlayer(Wav):
                     sound = self.sounds[key]
                 else:
                     sound = lambda f,d,v: self.synth.clean_ends(self.synth.sine_tone(f,d,v))
-                notes += [note.freq() for note in note_lines[1][key]]
+                for note in note_lines[1][key]:
+                    if hasattr(note, 'freq'):
+                        notes.append(note.freq())
 
             if len(notes) > 0:
                 self.append_sound(self.synth.chord(notes, sound, length))

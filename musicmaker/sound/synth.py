@@ -22,13 +22,13 @@ class Synth:
         return data * shape
 
     def tongue(self, data):
-        return self.shape(data, {0.0: 0.0, 0.005: 1.0, 1.0: 1.0})
+        return self.shape(data, {0.0: 0.0, 0.02: 1.0, 1.0: 1.0})
 
     def release(self, data):
-        return self.shape(data, {0.0: 1.0, 0.995: 1.0, 1.0: 0.0})
+        return self.shape(data, {0.0: 1.0, 0.98: 1.0, 1.0: 0.0})
 
     def clean_ends(self, data):
-        return self.shape(data, {0.0: 0.0, 0.005: 1.0, 0.995: 1.0, 1.0: 0.0})
+        return self.shape(data, {0.0: 0.0, 0.02: 1.0, 0.98: 1.0, 1.0: 0.0})
 
     def sine_tone(self, freq=440.0, duration_ms=1000, volume=1.0):
         num_samples = int(self.sample_rate * (duration_ms / 1000.0))

@@ -143,9 +143,9 @@ class Note(Token):
         acc = ''
         if accidental:
             acc = accidental
-            acc.replace('^', '#')
-            acc.replace('_', 'b')
-            acc.replace('=', '')
+            acc = acc.replace('^', '#')
+            acc = acc.replace('_', 'b')
+            acc = acc.replace('=', '')
         else:
             accidentals = key.accidentals
             if note.upper() in accidentals:
@@ -240,7 +240,7 @@ class Rest(Token):
         # char==X or Z means length is in measures
         Token.__init__(self, **kwds)
         self.symbol = symbol
-        self.length = (num, denom)
+        self.length = (int(num) if num is not None else 1, int(denom) if denom is not None else 1)
 
 # map mode names relative to Ionian (in chromatic steps)
 mode_values = {'major': 0, 'minor': 3, 'ionian': 0, 'aeolian': 3,
@@ -369,6 +369,10 @@ class AbcStaff(Staff):
                 notes.append(token.pitch)
                 length = token.length
                 length = length[0]/length[1]
+            elif isinstance(token, Rest):
+                notes.append(token.symbol)
+                length = token.length
+                length = length[0]/length[1]
             if not in_chord and len(notes) > 0:
                 self.add(notes, length)
                 notes = []
@@ -410,7 +414,7 @@ class AbcStaff(Staff):
 
         tempo = self.header.get('tempo', None)
         if tempo:
-            self.tempo = tempo
+            self.tempo = float(tempo)
 
         tokens = []
         for i,line in enumerate(tune):
@@ -579,11 +583,12 @@ if __name__ == '__main__':
 T: A Birthday
 R: polka
 M: 2/4
+Q: 240
 K: Gmajor
 [DG]g eg/e/|dB GF/E/|DF Ac|BG GD-|
-Dg eg/e/|dB GF/E/|DF AB/A/|G4||
+[DG]g eg/e/|dB GF/E/|DF AB/A/|G4||
 g2 fe|dB GF/E/|DF Ac|BG GD-|
-Dg eg/e/|dB GF/E/|DF AB/A/|G4||
+[DG]g eg/e/|dB GF/E/|DF AB/A/|G4||
 A3d|BG GB|Ad cA|BG GB|
 A3d|BG GB|de/d/ cA| AG G2-||
 """
@@ -594,4 +599,5 @@ A3d|BG GB|de/d/ cA| AG G2-||
 
     print('playing..', flush=True)
     player = StaffPlayer(abc_staff)
+    player.add_sound(1, player.synth.chime)
     player.play()
