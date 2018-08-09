@@ -1,5 +1,4 @@
 class Staff:
-
     class Line:
         def __init__(self):
             self.note_groups = [] # array of ([pitch], length) pairs
@@ -13,6 +12,7 @@ class Staff:
 
         def restart(self):
             self.cur_index = 0
+            self.cur_beat = 0
 
         def check_cur(self, beat):
             if self.cur_index < len(self.note_groups) and self.cur_beat <= beat:
@@ -26,7 +26,7 @@ class Staff:
             return self.note_groups[self.cur_index-1][0]
 
 
-    def __init__(self, loop=False, tempo=120, meter_beats=4, meter_base=4):
+    def __init__(self, loop=False, tempo=120, meter_beats=0, meter_base=0):
         self.loop = loop
         self.tempo = tempo
         self.meter_beats = meter_beats

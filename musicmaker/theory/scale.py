@@ -2,8 +2,6 @@ import argparse
 import random
 import sys
 
-from musicmaker.sound.staffplayer import StaffPlayer
-from .staff import Staff
 from .pitch import Pitch
 
 class Scale:
@@ -137,7 +135,10 @@ class Scale:
     }
 
     def __init__(self, root, mode):
-        self.root = root
+        if isinstance(root, str):
+            self.root = Pitch(root)
+        else:
+            self.root = root
         if isinstance(mode, str):
             self.mode = self.modes[mode]
         else:
@@ -159,6 +160,10 @@ class Scale:
         return self.root.transpose(self.mode.find_step(num))
 
 if __name__ == '__main__':
+
+    from musicmaker.sound.staffplayer import StaffPlayer
+    from .staff import Staff
+
     parser = argparse.ArgumentParser(
         description='Find the given scale.')
     parser.add_argument('-r', '--root',

@@ -16,6 +16,7 @@ NOTE_MAP = {
     'B':    23,       'Cb':   23,       'A##':  23
 }
 REV_NOTE_MAP = { 0: 'C', 1: 'Db', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F', 6: 'Gb', 7: 'G', 8: 'Ab', 9: 'A', 10: 'Bb', 11: 'B' }
+SHARP_NOTE_MAP = { 0: 'C', 1: 'C#', 2: 'D', 3: 'D#', 4: 'E', 5: 'F', 6: 'F#', 7: 'G', 8: 'G#', 9: 'A', 10: 'A#', 11: 'B' }
 
 @functools.lru_cache(32)
 def freq_equal_temperament(n, base_freq):
@@ -59,9 +60,13 @@ class Pitch:
             s.octave += 1
         return s
 
-    # Used to convert note name to one in REV_NOTE_MAP
+    # Used to convert note name to one in REV_NOTE_MAP (flat-based)
     def normal(self):
         return Pitch(REV_NOTE_MAP[self.value%12], self.octave, self.tuning)
+
+    # Used to convert note name to one in SHARP_NOTE_MAP (sharp-based)
+    def sharp_normal(self):
+        return Pitch(SHARP_NOTE_MAP[self.value%12], self.octave, self.tuning)
 
     def freq(self):
         return freq_equal_temperament(self.value, self.tuning)
