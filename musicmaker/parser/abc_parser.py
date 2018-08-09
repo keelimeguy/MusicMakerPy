@@ -333,8 +333,8 @@ class Key(Scale):
 
 
 class AbcStaff(Staff):
-    def __init__(self, abc):
-        Staff.__init__(self)
+    def __init__(self, abc, loop=False):
+        Staff.__init__(self, loop=loop)
         self.parse(abc)
 
     def parse(self, abc):
@@ -361,20 +361,19 @@ class AbcStaff(Staff):
 
         in_chord = False
         notes = []
-        length = 0
         for token in self.tokens:
             if isinstance(token, ChordBracket):
                 in_chord = not in_chord
             elif isinstance(token, Note):
-                notes.append(token.pitch)
                 length = token.length
                 length = length[0]/length[1]
+                notes.append((token.pitch, length))
             elif isinstance(token, Rest):
-                notes.append(token.symbol)
                 length = token.length
                 length = length[0]/length[1]
+                notes.append((token.symbol, length))
             if not in_chord and len(notes) > 0:
-                self.add(notes, length)
+                self.add_multi_length(notes)
                 notes = []
 
     def parse_header(self, header):
@@ -414,6 +413,8 @@ class AbcStaff(Staff):
 
         tempo = self.header.get('tempo', None)
         if tempo:
+            if '=' in tempo:
+                tempo = tempo.split('=')[1]
             self.tempo = float(tempo)
 
         tokens = []
@@ -590,14 +591,14 @@ K: Gmajor
 g2 fe|dB GF/E/|DF Ac|BG GD-|
 [DG]g eg/e/|dB GF/E/|DF AB/A/|G4||
 A3d|BG GB|Ad cA|BG GB|
-A3d|BG GB|de/d/ cA| AG G2-||
+A3d|BG GB|de/d/ cA| BG GB-||
 """
 
-    abc_staff = AbcStaff(abc)
+    abc_staff = AbcStaff(abc, loop=True)
 
     print(abc)
 
-    print('playing..', flush=True)
+    print('looping..', flush=True)
     player = StaffPlayer(abc_staff)
-    player.add_sound(1, player.synth.chime)
+    player.set_default_sound(player.synth.chime)
     player.play()

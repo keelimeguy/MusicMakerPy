@@ -9,7 +9,11 @@ class StaffPlayer(Wav):
         Wav.__init__(self, sample_rate)
         self.staff = staff
         self.sounds = {}
+        self.default_sound = lambda f,d,v: self.synth.clean_ends(self.synth.sine_tone(f,d,v))
         self.ready = False
+
+    def set_default_sound(self, sound):
+        self.default_sound = sound
 
     def add_sound(self, key, sound):
         self.sounds[key] = sound
@@ -17,22 +21,25 @@ class StaffPlayer(Wav):
     def prepare(self):
         for note_lines in self.staff:
 
-            notes = []
-            length = note_lines[0]*60.0*1000.0/self.staff.tempo
+            for key in note_lines:
 
-            for key in note_lines[1]:
+                notes = []
+
+                length = note_lines[key][1]*60.0*1000.0/self.staff.tempo
+
                 if key in self.sounds:
                     sound = self.sounds[key]
                 else:
-                    sound = lambda f,d,v: self.synth.clean_ends(self.synth.sine_tone(f,d,v))
-                for note in note_lines[1][key]:
+                    sound = self.default_sound
+
+                for note in note_lines[key][0]:
                     if hasattr(note, 'freq'):
                         notes.append(note.freq())
 
-            if len(notes) > 0:
-                self.append_sound(self.synth.chord(notes, sound, length))
-            else:
-                self.add_rest(length)
+                if len(notes) > 0:
+                    self.append_sound(self.synth.chord(notes, sound, length), key)
+                else:
+                    self.add_rest(length, key)
 
         self.ready = True
 

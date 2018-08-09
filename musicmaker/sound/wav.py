@@ -10,16 +10,20 @@ from .synth import Synth
 
 class Wav:
     def __init__(self, sample_rate=44100):
-        self.audio = []
+        self.audio = {}
         self.sample_rate = sample_rate
         self.synth = Synth(sample_rate)
 
-    def add_rest(self, duration_ms=500):
+    def add_rest(self, duration_ms=500, channel='__default__'):
         num_samples = int(self.sample_rate * (duration_ms / 1000.0))
-        self.audio.append(numpy.sin(numpy.zeros(num_samples)))
+        if channel not in self.audio:
+            self.audio[channel] = []
+        self.audio[channel].append(numpy.zeros(num_samples))
 
-    def append_sound(self, audio):
-        self.audio.append(audio)
+    def append_sound(self, audio, channel='__default__'):
+        if channel not in self.audio:
+            self.audio[channel] = []
+        self.audio[channel].append(audio)
 
     def save(self, file_name):
         wav_file = wave.open(file_name,'w')
@@ -31,9 +35,17 @@ class Wav:
         compname = 'not compressed'
         wav_file.setparams((nchannels, sampwidth, self.sample_rate, nframes, comptype, compname))
 
+
+        chunk_dict = {}
+        for channel in self.audio:
+            chunk_dict[channel] = numpy.concatenate(self.audio[channel]) * 0.25
+        vals = list(chunk_dict.values())
+        chunk = vals[0]
+        for val in vals[1:]:
+            chunk += val
+
         # (short) 16-bit signed integers for the sample size
         #   [32767 is the maximum value for a short integer.]
-        chunk = numpy.concatenate(self.audio) * 0.25
         chunk = numpy.vectorize(lambda sample: struct.pack('h', int( sample * 32767.0 )))(chunk)
         wav_file.writeframes(chunk)
 
@@ -49,7 +61,22 @@ class Wav:
             output=True
         )
 
-        chunk = numpy.concatenate(self.audio) * 0.25
+        chunk_dict = {}
+        maxlen = 0
+        for channel in self.audio:
+            chunk_dict[channel] = numpy.concatenate(self.audio[channel]) * 0.25
+            if len(chunk_dict[channel]) > maxlen:
+                maxlen = len(chunk_dict[channel])
+        vals = list(chunk_dict.values())
+        chunk = vals[0]
+        difflen = maxlen - len(chunk)
+        if difflen > 0:
+            chunk = numpy.pad(chunk, (0, difflen), 'constant')
+        for val in vals[1:]:
+            difflen = maxlen - len(val)
+            if difflen > 0:
+                val = numpy.pad(val, (0, difflen), 'constant')
+            chunk += val
         chunk = chunk.astype(numpy.float32).tostring()
 
         if loop:
