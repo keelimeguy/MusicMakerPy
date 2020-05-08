@@ -4,6 +4,8 @@ A program to make, generate, and play: chord progressions, phrases, and other su
 
 This program is an inspired rewrite of my [java implementation](https://github.com/keelimeguy/MusicMaker).
 
+There is also a _newer_ [c++ version](https://github.com/keelimeguy/MusicMaker_JUCE).
+
 ## Usage
 
 ### Compiling
