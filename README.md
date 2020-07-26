@@ -5,8 +5,9 @@ A program to make, generate, and play: chord progressions, phrases, and other su
 This program is an inspired rewrite of my [java implementation](https://github.com/keelimeguy/MusicMaker).
 
 ## Usage
+Python virtual environment is always recommended.
 
-### Compiling
+### Requirements
 `pip install -r requirements.txt`
 
 ### Testing
@@ -32,3 +33,5 @@ This program is an inspired rewrite of my [java implementation](https://github.c
 `python -m musicmaker.theory.instrument.guitar -h`
 
 `python -m musicmaker.parser.abc_parser`
+
+`python -m ust_creator.main -h`

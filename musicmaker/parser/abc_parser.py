@@ -568,7 +568,7 @@ class AbcStaff(Staff):
                     j += m.end()
                     continue
 
-                raise Exception("Unable to parse: %s\n%s" % (part, self.url))
+                raise Exception("Unable to parse: %s" % (part))
 
             if not isinstance(tokens[-1], Continuation):
                 tokens.append(Newline(line=i, char=j, text='\n'))

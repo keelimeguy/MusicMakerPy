@@ -119,6 +119,7 @@ class Chord:
             #     self.add(root.transpose(major_mode.find_step(7)))
             pass
 
+        adjusted_root = root
         if adjust:
             # First deal with omissions so that we don't overwrite other adjustments
             no_base = re.sub(r'((((?<!no)##|(?<!no)bb|add(##?|bb?)?)[0-9]+)|sus[24])*', '', adjust)
@@ -169,8 +170,8 @@ class Chord:
                     # Remove existing note to be sharpened
                     self.remove(new_note)
                     if new_note == root:
-                        root = new_note.transpose(sharp_step_adjust)
-                        self.add(root)
+                        adjusted_root = new_note.transpose(sharp_step_adjust)
+                        self.add(adjusted_root)
                     else:
                         self.add(new_note.transpose(sharp_step_adjust))
 
@@ -186,12 +187,12 @@ class Chord:
                     # Remove existing note to be flattened
                     self.remove(new_note)
                     if new_note == root:
-                        root = new_note.transpose(flat_step_adjust)
-                        self.add(root)
+                        adjusted_root = new_note.transpose(flat_step_adjust)
+                        self.add(adjusted_root)
                     else:
                         self.add(new_note.transpose(flat_step_adjust))
 
-        bass_note = root.transpose(0)
+        bass_note = adjusted_root.transpose(0)
 
         if len(bass) > 1:
             step_adjust = 0
@@ -209,8 +210,8 @@ class Chord:
             if bass_id[0] >= '0' and bass_id[0] <= '9':
                 bass_note = root.transpose(major_mode.find_step(int(bass_id)) + step_adjust)
             else:
-                bass_note = Pitch(bass_id, root.octave)
-                bass_note.set_octave(root.octave+1 if bass_note.value < root.value else root.octave)
+                bass_note = Pitch(bass_id, adjusted_root.octave)
+                bass_note.set_octave(adjusted_root.octave+1 if bass_note.value < adjusted_root.value else adjusted_root.octave)
             self.add(bass_note)
 
         self.order(bass_note, octave)
