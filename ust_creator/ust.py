@@ -1,43 +1,14 @@
 from typing import List
 
+from .language.katakana import Katakana
+from .language.language import Language
 from .voice import Voice, VoiceType
 from .lyric import Lyric
 
 
 class UST:
-
-    _suffix_lookup = {
-        'あ': 'a', 'い': 'i', 'う': 'u', 'え': 'e', 'お': 'o',
-        'か': 'a', 'き': 'i', 'く': 'u', 'け': 'e', 'こ': 'o',
-        'が': 'a', 'ぎ': 'i', 'ぐ': 'u', 'げ': 'e', 'ご': 'o',
-        'さ': 'a', 'し': 'i', 'す': 'u', 'せ': 'e', 'そ': 'o',
-        'ざ': 'a', 'じ': 'i', 'ず': 'u', 'ぜ': 'e', 'ぞ': 'o',
-        'た': 'a', 'ち': 'i', 'つ': 'u', 'て': 'e', 'と': 'o',
-        'だ': 'a', 'ぢ': 'i', 'づ': 'u', 'で': 'e', 'ど': 'o',
-        'な': 'a', 'に': 'i', 'ぬ': 'u', 'ね': 'e', 'の': 'o',
-        'は': 'a', 'ひ': 'i', 'ふ': 'u', 'へ': 'e', 'ほ': 'o',
-        'ば': 'a', 'び': 'i', 'ぶ': 'u', 'べ': 'e', 'ぼ': 'o',
-        'ぱ': 'a', 'ぴ': 'i', 'ぷ': 'u', 'ぺ': 'e', 'ぽ': 'o',
-        'ま': 'a', 'み': 'i', 'む': 'u', 'め': 'e', 'も': 'o',
-        'や': 'a', 'ゆ': 'u', 'よ': 'o',
-        'ら': 'a', 'り': 'i', 'る': 'u', 'れ': 'e', 'ろ': 'o',
-        'わ': 'a', 'を': 'o', 'ん': '-',
-        'きゃ': 'a', 'きゅ': 'u', 'きょ': 'o',
-        'ぎゃ': 'a', 'ぎゅ': 'u', 'ぎょ': 'o',
-        'しゃ': 'a', 'しゅ': 'u', 'しょ': 'o',
-        'じゃ': 'a', 'じゅ': 'u', 'じょ': 'o',
-        'ちゃ': 'a', 'ちゅ': 'u', 'ちょ': 'o',
-        'ぢゃ': 'a', 'ぢゅ': 'u', 'ぢょ': 'o',
-        'にゃ': 'a', 'にゅ': 'u', 'にょ': 'o',
-        'ひゃ': 'a', 'ひゅ': 'u', 'ひょ': 'o',
-        'びゃ': 'a', 'びゅ': 'u', 'びょ': 'o',
-        'ぴゃ': 'a', 'ぴゅ': 'u', 'ぴょ': 'o',
-        'みゃ': 'a', 'みゅ': 'u', 'みょ': 'o',
-        'りゃ': 'a', 'りゅ': 'u', 'りょ': 'o',
-        '-': '-', 'R': '-'
-    }
-
-    def __init__(self, project_name: str, wav_filename: str, voice: Voice, tempo: float = 100.0, flags: str = ''):
+    def __init__(self, project_name: str, wav_filename: str, voice: Voice,
+                 tempo: float = 100.0, flags: str = ''):
         self._project_name = project_name
         self._wav_filename = wav_filename
         self._voice = voice
@@ -47,13 +18,13 @@ class UST:
         self._lyric_number = 0
         self._last_lyric_value = '-'
 
-    def write(self, file, lyrics: List[Lyric]):
+    def write(self, file, lyrics: List[Lyric], language: Language = Katakana):
         self._write_section_version(file)
         self._write_section_setting(file)
 
         self._begin_section_lyric()
         for lyric in lyrics:
-            self._add_lyric(file, lyric)
+            self._add_lyric(file, lyric, language=language)
         self._end_section_lyric(file)
 
     def _write_line(self, file, line: str):
@@ -84,7 +55,7 @@ Mode2=True""".encode('shift-jis'))
         self._lyric_number = 0
         self._last_lyric_value = '-'
 
-    def _add_lyric(self, file, lyric: Lyric):
+    def _add_lyric(self, file, lyric: Lyric, language: Language = Katakana):
         file.write(f"""
 [#{self._lyric_number:04}]
 Length={lyric.length}""".encode('shift-jis'))
@@ -93,7 +64,7 @@ Length={lyric.length}""".encode('shift-jis'))
             self._write_line(file, f"Lyric={lyric.value}")
 
         elif self._voice.voice_type == VoiceType.VCV:
-            self._write_line(file, f"Lyric={self._suffix_lookup[self._last_lyric_value]} {lyric.value}")
+            self._write_line(file, f"Lyric={language.get_suffix_lookup()[self._last_lyric_value]} {lyric.value}")
 
         elif self._voice.voice_type == VoiceType.CVVC:
             raise NotImplementedError(f"VoiceType not implemented: {self._voice.voice_type.name}")
