@@ -2,3 +2,5 @@ pyaudio==0.2.11
 numpy==1.18.0
 scipy==1.4.1
 eng-to-ipa==0.0.2
+inflect==4.1.0
+pykakasi==2.0.1

@@ -1,6 +1,6 @@
 from typing import List
 
-from .language.katakana import Katakana
+from .language.hiragana import Hiragana
 from .language.language import Language
 from .voice import Voice, VoiceType
 from .lyric import Lyric
@@ -18,7 +18,7 @@ class UST:
         self._lyric_number = 0
         self._last_lyric_value = '-'
 
-    def write(self, file, lyrics: List[Lyric], language: Language = Katakana):
+    def write(self, file, lyrics: List[Lyric], language: Language = Hiragana):
         self._write_section_version(file)
         self._write_section_setting(file)
 
@@ -55,7 +55,7 @@ Mode2=True""".encode('shift-jis'))
         self._lyric_number = 0
         self._last_lyric_value = '-'
 
-    def _add_lyric(self, file, lyric: Lyric, language: Language = Katakana):
+    def _add_lyric(self, file, lyric: Lyric, language: Language = Hiragana):
         file.write(f"""
 [#{self._lyric_number:04}]
 Length={lyric.length}""".encode('shift-jis'))
@@ -76,8 +76,6 @@ Length={lyric.length}""".encode('shift-jis'))
 
         file.write(f"""
 NoteNum={lyric.note.value}
-PreUtterance={lyric.note.pre_utterance_ms}
-VoiceOverlap={lyric.note.voice_overlap_ms}
 Intensity={lyric.note.intensity_percentage}
 Modulation={lyric.note.modulation_percentage}""".encode('shift-jis'))
 
@@ -95,13 +93,18 @@ Modulation={lyric.note.modulation_percentage}""".encode('shift-jis'))
             self._write_line(file, f"PBS={';'.join([str(i) for i in lyric.note.tuning.portamento.pbs])}")
             self._write_line(file, f"PBY={','.join([str(i) for i in lyric.note.tuning.portamento.pby])}")
 
+        if lyric.note.pre_utterance_ms:
+            self._write_line(file, f"PreUtterance={lyric.note.pre_utterance_ms}")
+        if lyric.note.voice_overlap_ms:
+            self._write_line(file, f"VoiceOverlap={lyric.note.voice_overlap_ms}")
+
         if lyric.note.tuning.pbm:
             self._write_line(file, f"PBM={lyric.note.tuning.pbm}")
-
         if lyric.note.consonant_velocity:
             self._write_line(file, f"Velocity={lyric.note.consonant_velocity}")
+        if lyric.note.start_point:
+            self._write_line(file, f"StartPoint={lyric.note.start_point}")
 
-        self._write_line(file, f"StartPoint={lyric.note.start_point}")
         self._write_line(file, f"Envelope={','.join([str(i) for i in lyric.note.tuning.envelope])}")
 
         if lyric.note.tuning.vbr:
