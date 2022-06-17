@@ -1,7 +1,7 @@
 class Staff:
     class Line:
         def __init__(self):
-            self.note_groups = [] # array of ([pitch], length) pairs
+            self.note_groups = []  # array of ([pitch], length) pairs
             self.total_beats = 0
             self.cur_index = 0
             self.cur_beat = 0
@@ -34,7 +34,6 @@ class Staff:
                 self.total_beats += length
                 self.note_groups.append((['z'], length))
 
-
     def __init__(self, loop=False, tempo=120, meter_beats=0, meter_base=0):
         self.loop = loop
         self.tempo = tempo
@@ -60,16 +59,16 @@ class Staff:
     def add_multi_length(self, note_groups, line=1):
         note_lines = []
         cur_line = 0
-        for note_group in sorted(note_groups, key=lambda el:el[1]):
+        for note_group in sorted(note_groups, key=lambda el: el[1]):
             note = note_group[0]
             length = note_group[1]
             if not note_lines:
-                note_lines.append(([],length))
+                note_lines.append(([], length))
             if note_lines[cur_line][1] == length:
                 note_lines[cur_line][0].append(note)
             else:
                 cur_line += 1
-                note_lines.append(([],length))
+                note_lines.append(([], length))
                 note_lines[cur_line][0].append(note)
 
         if line not in self.lines:
@@ -95,9 +94,6 @@ class Staff:
         if self.lines[line].total_beats > self.total_beats:
             self.total_beats = self.lines[line].total_beats
 
-
-
-
     def __iter__(self):
         self.cur_beat = 0
         for key in self.lines:
@@ -115,8 +111,8 @@ class Staff:
 
             for key in self.lines:
                 line = self.lines[key]
-                cur =  line.check_cur(self.cur_beat)
-                if cur == None:
+                cur = line.check_cur(self.cur_beat)
+                if cur is None:
                     continue
 
                 note_lines[key] = line.get_cur()

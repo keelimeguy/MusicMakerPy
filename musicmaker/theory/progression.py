@@ -1,5 +1,6 @@
 from .staff import Staff
 
+
 class Progression(Staff):
     def __init__(self, loop=False, tempo=120, meter_beats=4, meter_base=4):
         Staff.__init__(self, loop, tempo, meter_beats, meter_base)
@@ -15,6 +16,7 @@ class Progression(Staff):
     def show(self):
         beat = 0
         for note_group in self.note_groups:
-            print(beat, ': (', note_group[2], ')', '\t' if len(note_group[2])<=5 else '', '\t', [str(note) for note in note_group[0]])
+            print(beat, ': (', note_group[2], ')', '\t' if len(note_group[2])
+                  <= 5 else '', '\t', [str(note) for note in note_group[0]])
             beat += note_group[1]
         print(beat, 'END')

@@ -4,16 +4,17 @@ from ..structure.weighteddigraph import WeightedDigraph
 from .chord import Chord
 from .progression import Progression
 
+
 class ProgressionGenerator(WeightedDigraph):
     position_dict = {}
 
     class Weight:
-        PRIMARY=0
-        RESOLVE=1
-        COMMON=2
-        UNCOMMON=4
-        SPARSE=8
-        RARE=16
+        PRIMARY = 0
+        RESOLVE = 1
+        COMMON = 2
+        UNCOMMON = 4
+        SPARSE = 8
+        RARE = 16
 
     class Position:
         def __init__(self, name, root_step, base_adjust='', opt_adjust='', step_adjust=0):
@@ -35,13 +36,13 @@ class ProgressionGenerator(WeightedDigraph):
         def get_base_chord(self, scale):
             if scale.root:
                 pitch = self.get_base_pitch(scale)
-                return Chord(pitch.name + self.base_adjust);
+                return Chord(pitch.name + self.base_adjust)
             return (self.name, [str(self.root_step)+'('+str(self.step_adjust)+')', self.base_adjust])
 
         def get_adjusted_chord(self, scale, i):
             if scale.root:
                 pitch = self.get_base_pitch(scale)
-                return Chord(pitch.name + self.opt_adjust[i]);
+                return Chord(pitch.name + self.opt_adjust[i])
             return (self.name, [str(self.root_step)+'('+str(self.step_adjust)+')', self.opt_adjust[i]])
 
         def get_random_adjusted_chord(self, scale):
@@ -52,7 +53,8 @@ class ProgressionGenerator(WeightedDigraph):
                 return self.get_base_chord(scale)
 
         def get_chord_list(self, scale):
-            return [chord for chord in [self.get_base_chord(scale)]+[self.get_adjusted_chord(scale, i) for i in range(len(self.opt_adjust))]]
+            return [chord for chord in [self.get_base_chord(scale)] + [self.get_adjusted_chord(
+                scale, i) for i in range(len(self.opt_adjust))]]
 
     def __init__(self, scale, resolve, start=None):
         WeightedDigraph.__init__(self)
@@ -70,12 +72,13 @@ class ProgressionGenerator(WeightedDigraph):
         for key in sorted(self.V):
             v = self.V[key]
             if self.scale.root:
-                print(str(v.value),[str(chord) for chord in v.value.get_chord_list(self.scale)],':')
+                print(str(v.value), [str(chord) for chord in v.value.get_chord_list(self.scale)], ':')
             else:
-                print(str(v.value),':')
+                print(str(v.value), ':')
             for adj in sorted(v.adj, key=lambda n: (v.adj[n], n.value)):
                 if self.scale.root:
-                    print('\t->(', v.adj[adj], ') \t', str(adj.value), [str(chord) for chord in adj.value.get_chord_list(self.scale)])
+                    print('\t->(', v.adj[adj], ') \t', str(adj.value), [str(chord)
+                          for chord in adj.value.get_chord_list(self.scale)])
                 else:
                     print('\t->(', v.adj[adj], ') \t', str(adj.value))
 

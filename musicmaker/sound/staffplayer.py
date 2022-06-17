@@ -4,12 +4,13 @@ import sys
 from musicmaker.theory.staff import Staff
 from .wav import Wav
 
+
 class StaffPlayer(Wav):
     def __init__(self, staff, sample_rate=44100):
         Wav.__init__(self, sample_rate)
         self.staff = staff
         self.sounds = {}
-        self.default_sound = lambda f,d,v: self.synth.clean_ends(self.synth.sine_tone(f,d,v))
+        self.default_sound = lambda f, d, v: self.synth.clean_ends(self.synth.sine_tone(f, d, v))
         self.ready = False
 
     def set_default_sound(self, sound):
@@ -57,11 +58,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Find the given scale.')
     parser.add_argument('-r', '--root', default='A',
-        help='The root for the song (e.g. A, Cb, F#).')
+                        help='The root for the song (e.g. A, Cb, F#).')
     parser.add_argument('-m', '--mode', default='HarmonicMinor',
-        help='The target mode for the song (e.g. HarmonicMinor, Major, Mixolydian).')
+                        help='The target mode for the song (e.g. HarmonicMinor, Major, Mixolydian).')
     parser.add_argument('-t', '--tempo', default=60,
-        help='The tempo for the song in beats per minute (e.g. 60).')
+                        help='The tempo for the song in beats per minute (e.g. 60).')
     args = parser.parse_args()
 
     if args.mode in Scale.modes:

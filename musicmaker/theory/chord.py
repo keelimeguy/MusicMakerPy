@@ -24,6 +24,7 @@ REDUCED_CHORD_REGEX = (
     '((((##?|bb?)|(add|no)(##?|bb?)?)[0-9]+)|sus[24])*'
 )
 
+
 class Chord:
     def __init__(self, name, octave=4):
         self.name = name
@@ -47,10 +48,10 @@ class Chord:
     def get_notes(self):
         return self.notes
 
-    def make(self, name, octave=4):
+    def make(self, name, octave=4):  # noqa: C901
         self.valid = False
         m = re.match(CHORD_REGEX, name)
-        if m == None or m.group(0) != name:
+        if m is None or m.group(0) != name:
             return
         key = m.group('key')
         kind = m.group('kind')
@@ -140,7 +141,7 @@ class Chord:
                         base_step_adjust += 1
                     if len(no_arg) > 1:
                         if no_arg[1] == 'b':
-                           base_step_adjust -= 1
+                            base_step_adjust -= 1
                         elif no_arg[1] == '#':
                             base_step_adjust += 1
                     no_arg = re.sub(r'[#b]', '', no_arg)
@@ -236,7 +237,7 @@ class Chord:
                         base_step_adjust += 1
                     if len(add_arg) > 1:
                         if add_arg[1] == 'b':
-                           base_step_adjust -= 1
+                            base_step_adjust -= 1
                         elif add_arg[1] == '#':
                             base_step_adjust += 1
                     add_arg = re.sub(r'[#b]', '', add_arg)
@@ -250,14 +251,14 @@ class Chord:
         if bass_note in self.notes:
             self.notes.sort(key=lambda el: el.value)
             next = self.notes[0]
-            while next.value%12 != bass_note.value%12:
+            while next.value % 12 != bass_note.value % 12:
                 self.remove(next)
                 self.add(next)
                 next = self.notes[0]
             for i in range(len(self.notes)):
                 self.notes[i].set_octave(octave)
                 if i+1 < len(self.notes):
-                    if self.notes[i+1].value%12 <= self.notes[i].value%12:
+                    if self.notes[i+1].value % 12 <= self.notes[i].value % 12:
                         octave += 1
         else:
             self.add(bass_note)
@@ -265,14 +266,13 @@ class Chord:
             self.remove(bass_note)
 
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Find the notes of a given chord.')
     parser.add_argument('chord',
-        help='The target chord in standard format (e.g. Ebdim7, C#sus4, C#sus4#5/A).')
+                        help='The target chord in standard format (e.g. Ebdim7, C#sus4, C#sus4#5/A).')
     parser.add_argument('-p', '--play', action='store_true',
-        help='Play the given chord.')
+                        help='Play the given chord.')
     args = parser.parse_args()
 
     c = Chord(args.chord)

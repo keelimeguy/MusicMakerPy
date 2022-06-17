@@ -8,21 +8,22 @@ from .pitch import Pitch
 
 # Based on http://mugglinworks.com/chordmaps/GenericMapMinor.pdf
 # Defined here in order: blue top to bottom, left green top to bottom, then right green top to bottom
+
+
 class MinorProgression(ProgressionGenerator):
     position_dict = {
         # Mb9no7 used in opt_adjust instead of b9 to avoid conflicts with e.g. Bb 9 and B b9
         'iidim':      ProgressionGenerator.Position('iidim', 2, 'dim', []),
         'viidim/2':   ProgressionGenerator.Position('viidim/2', 7, 'dim/2', []),
-        'V':          ProgressionGenerator.Position('V', 5, '', ['7','Mb9no7','Mb13no7','sus4']),
+        'V':          ProgressionGenerator.Position('V', 5, '', ['7', 'Mb9no7', 'Mb13no7', 'sus4']),
         'bIIIaug':    ProgressionGenerator.Position('bIIIaug', 3, 'aug', [], -1),
         'im/b3':      ProgressionGenerator.Position('im/b3', 1, 'm/b3', []),
         'bVI':        ProgressionGenerator.Position('bVI', 6, '', ['6', 'M7'], -1),
         'ivm/b6':     ProgressionGenerator.Position('ivm/b6', 4, 'm/b6', ['m6/b6', 'm7/b6']),
         'ivm':        ProgressionGenerator.Position('ivm', 4, 'm', ['m6', 'm7', 'm9']),
         'bII/4':      ProgressionGenerator.Position('bII/4', 2, '/4', [], -1),
-        'im/b3':      ProgressionGenerator.Position('im/b3', 1, 'm/b3', []),
         'im/5':       ProgressionGenerator.Position('im/5', 1, 'm/5', []),
-        'im':         ProgressionGenerator.Position('im', 1, 'm', ['2','sus4']),
+        'im':         ProgressionGenerator.Position('im', 1, 'm', ['2', 'sus4']),
         'ivm/1':      ProgressionGenerator.Position('ivm/1', 4, 'm/1', []),
         'V/1':        ProgressionGenerator.Position('V/1', 5, '/1', []),
 
@@ -48,7 +49,7 @@ class MinorProgression(ProgressionGenerator):
         ProgressionGenerator.__init__(self, Scale(root, 'Minor'), resolve, start)
         self.setup()
 
-    def setup(self):
+    def setup(self):  # noqa: C901
         for position_str in ['iidim', 'viidim/2']:
             self.add_transition_edge(position_str, 'V')
             for position_str_2 in ['bIIIaug', 'im/b3']:
@@ -111,41 +112,42 @@ class MinorProgression(ProgressionGenerator):
 
         for position_str in ['iidim', 'bIIIaug', 'ivm', 'V', 'bVI', 'im/5', 'im/b3', 'ivm/1', 'V/1']:
             for position_str_2 in ['V*', 'iidim7', 'Vdim7', 'I', 'iiidim7', 'vim7b5', 'II', '#ivdim7',
-                        'bVI*', 'bVII', 'ivm7', 'Vm7b5', 'bIII', 'bviim7b5', 'bVI7', '#ivdim7']:
+                                   'bVI*', 'bVII', 'ivm7', 'Vm7b5', 'bIII', 'bviim7b5', 'bVI7', '#ivdim7']:
                 self.add_transition_edge(position_str, position_str_2, self.Weight.RARE)
 
         for position_str in ['iidim', 'bIIIaug', 'ivm', 'V', 'bVI']:
             self.add_transition_edge('im', position_str)
         for position_str in ['V*', 'iidim7', 'Vdim7', 'I', 'iiidim7', 'vim7b5', 'II', '#ivdim7',
-                        'bVI*', 'bVII', 'ivm7', 'Vm7b5', 'bIII', 'bviim7b5', 'bVI7', '#ivdim7']:
+                             'bVI*', 'bVII', 'ivm7', 'Vm7b5', 'bIII', 'bviim7b5', 'bVI7', '#ivdim7']:
             self.add_transition_edge('im', position_str, self.Weight.SPARSE)
         self.add_transition_edge('im', 'im/5', self.Weight.UNCOMMON)
         self.add_transition_edge('im', 'im/b3', self.Weight.UNCOMMON)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Generate minor chord progression.')
     parser.add_argument('-r', '--root',
-        help='The root of the minor progression (e.g. C, Bb, F#).')
+                        help='The root of the minor progression (e.g. C, Bb, F#).')
     parser.add_argument('-g', '--generate',
-        help='Generate a minor progression with the given length.')
+                        help='Generate a minor progression with the given length.')
     parser.add_argument('-p', '--play', action='store_true',
-        help='Play the generated minor progression.')
+                        help='Play the generated minor progression.')
     args = parser.parse_args()
 
     if args.root:
         if not Pitch.valid(args.root):
             print('Valid roots are', ['None']+[root for root in Pitch.notes()])
             sys.exit()
-        p = MinorProgression(Pitch(args.root));
+        p = MinorProgression(Pitch(args.root))
     else:
-        p = MinorProgression();
+        p = MinorProgression()
 
     if args.generate:
         progression = p.generate(int(args.generate))
         progression.show()
     else:
-        p.show();
+        p.show()
 
     if args.play and args.generate and args.root:
         print('looping..', flush=True)

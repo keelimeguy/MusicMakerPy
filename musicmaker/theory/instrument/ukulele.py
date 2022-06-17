@@ -5,16 +5,18 @@ from .string_instrument import StringInstrument
 from musicmaker.theory.pitch import Pitch
 from musicmaker.theory.chord import Chord, REDUCED_CHORD_REGEX
 
+
 class Ukulele(StringInstrument):
     def __init__(self, frets=12, strings=None):
         StringInstrument.__init__(self, frets, strings if strings else
-                [Pitch('G', 4), Pitch('C', 4), Pitch('E', 4), Pitch('A', 4)])
+                                  [Pitch('G', 4), Pitch('C', 4), Pitch('E', 4), Pitch('A', 4)])
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Find the fingerings for ukulele.')
     parser.add_argument('-c', '--chord',
-        help='Find fingerings for the target chord (e.g. Ebdim7, C#sus4, C#sus4#5/A).')
+                        help='Find fingerings for the target chord (e.g. Ebdim7, C#sus4, C#sus4#5/A).')
     args = parser.parse_args()
 
     if args.chord:

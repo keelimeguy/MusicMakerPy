@@ -8,16 +8,18 @@ from .pitch import Pitch
 
 # Based on http://mugglinworks.com/chordmaps/GenericMap.pdf
 # Defined here in order: blue top to bottom, left green top to bottom, then right green top to bottom
+
+
 class MajorProgression(ProgressionGenerator):
     position_dict = {
-        'iim':        ProgressionGenerator.Position('iim', 2, 'm', ['m7','m9']),
-        'V':          ProgressionGenerator.Position('V', 5, '', ['7','9','11','13','sus4']),
+        'iim':        ProgressionGenerator.Position('iim', 2, 'm', ['m7', 'm9']),
+        'V':          ProgressionGenerator.Position('V', 5, '', ['7', '9', '11', '13', 'sus4']),
         'iiim':       ProgressionGenerator.Position('iiim', 3, 'm', ['m7']),
         'vim':        ProgressionGenerator.Position('vim', 6, 'm', ['m7', 'm9']),
         'IV':         ProgressionGenerator.Position('IV', 4, '', ['6', 'M7', 'm', 'm6']),
         'I/3':        ProgressionGenerator.Position('I/3', 1, '/3', []),
         'I/5':        ProgressionGenerator.Position('I/5', 1, '/5', []),
-        'I':          ProgressionGenerator.Position('I', 1, '', ['2','6','M7','M9','sus4']),
+        'I':          ProgressionGenerator.Position('I', 1, '', ['2', '6', 'M7', 'M9', 'sus4']),
         'IV/1':       ProgressionGenerator.Position('IV/1', 4, '/1', []),
         'V/1':        ProgressionGenerator.Position('V/1', 5, '/1', []),
 
@@ -117,43 +119,44 @@ class MajorProgression(ProgressionGenerator):
 
         for position_str in ['iim', 'iiim', 'IV', 'V', 'vim', 'I/5', 'I/3', 'IV/1', 'V/1']:
             for position_str_2 in ['IIIm7b5', 'VI', '#Idim7', '#IVm7b5', 'VII', '#IIdim7',
-                        'Vm', 'I*', 'Im6', 'V/2', 'II', 'bVI', 'bVII', 'IVm7', 'bII7',
-                        'VIm7b5/b3', '#Vdim7', 'III', 'VIIm7b5', 'Idim/b3', 'bVI7', 'bVII9']:
+                                   'Vm', 'I*', 'Im6', 'V/2', 'II', 'bVI', 'bVII', 'IVm7', 'bII7',
+                                   'VIm7b5/b3', '#Vdim7', 'III', 'VIIm7b5', 'Idim/b3', 'bVI7', 'bVII9']:
                 self.add_transition_edge(position_str, position_str_2, self.Weight.RARE)
 
         for position_str in ['iim', 'iiim', 'IV', 'V', 'vim']:
             self.add_transition_edge('I', position_str)
         for position_str in ['IIIm7b5', 'VI', '#Idim7', '#IVm7b5', 'VII', '#IIdim7',
-                    'Vm', 'I*', 'Im6', 'V/2', 'II', 'bVI', 'bVII', 'IVm7', 'bII7',
-                    'VIm7b5/b3', '#Vdim7', 'III', 'VIIm7b5', 'Idim/b3', 'bVI7', 'bVII9']:
+                             'Vm', 'I*', 'Im6', 'V/2', 'II', 'bVI', 'bVII', 'IVm7', 'bII7',
+                             'VIm7b5/b3', '#Vdim7', 'III', 'VIIm7b5', 'Idim/b3', 'bVI7', 'bVII9']:
             self.add_transition_edge('I', position_str, self.Weight.SPARSE)
         self.add_transition_edge('I', 'I/5', self.Weight.UNCOMMON)
         self.add_transition_edge('I', 'I/3', self.Weight.UNCOMMON)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Generate major chord progression.')
     parser.add_argument('-r', '--root',
-        help='The root of the major progression (e.g. C, Bb, F#).')
+                        help='The root of the major progression (e.g. C, Bb, F#).')
     parser.add_argument('-g', '--generate',
-        help='Generate a major progression with the given length.')
+                        help='Generate a major progression with the given length.')
     parser.add_argument('-p', '--play', action='store_true',
-        help='Play the generated major progression.')
+                        help='Play the generated major progression.')
     args = parser.parse_args()
 
     if args.root:
         if not Pitch.valid(args.root):
             print('Valid roots are', ['None']+[root for root in Pitch.notes()])
             sys.exit()
-        p = MajorProgression(Pitch(args.root));
+        p = MajorProgression(Pitch(args.root))
     else:
-        p = MajorProgression();
+        p = MajorProgression()
 
     if args.generate:
         progression = p.generate(int(args.generate))
         progression.show()
     else:
-        p.show();
+        p.show()
 
     if args.play and args.generate and args.root:
         print('looping..', flush=True)

@@ -1,11 +1,11 @@
 import math
 import numpy
-import pyaudio
 from scipy import interpolate
 from operator import itemgetter
 
 # Including techniques from:
 #   https://davywybiral.blogspot.com/2010/09/procedural-music-with-pyaudio-and-numpy.html
+
 
 class Synth:
     def __init__(self, sample_rate):
@@ -48,11 +48,11 @@ class Synth:
 
     def chime(self, freq, duration_ms=1000, volume=1.0):
         chunk = self.harmonics(freq, duration_ms, volume)
-        return self.shape(chunk, {0.0: 0.0, 0.005: 1.0, 0.25: 0.5, 0.9: 0.1, 1.0:0.0})
+        return self.shape(chunk, {0.0: 0.0, 0.005: 1.0, 0.25: 0.5, 0.9: 0.1, 1.0: 0.0})
 
     def chime_soft(self, freq, duration_ms=1000, volume=1.0):
         chunk = self.harmonics_soft(freq, duration_ms, volume)
-        return self.shape(chunk, {0.0: 0.0, 0.5:0.75, 0.8:0.4, .98:0.1, 1.0:0.0})
+        return self.shape(chunk, {0.0: 0.0, 0.5: 0.75, 0.8: 0.4, .98: 0.1, 1.0: 0.0})
 
     def chord(self, freqs, effect, duration_ms=1000, volume=1.0):
         data = effect(freqs[0], duration_ms, volume)

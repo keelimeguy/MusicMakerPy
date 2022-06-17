@@ -32,7 +32,7 @@ class UST:
 {line}""".encode('shift-jis'))
 
     def _write_section_version(self, file):
-        file.write(f"""[#VERSION]
+        file.write("""[#VERSION]
 UST Version1.2
 """.encode('shift-jis'))
 
@@ -55,7 +55,7 @@ Mode2=True""".encode('shift-jis'))
         self._lyric_number = 0
         self._last_lyric_value = '-'
 
-    def _add_lyric(self, file, lyric: Lyric, language: Language = Hiragana):
+    def _add_lyric(self, file, lyric: Lyric, language: Language = Hiragana):  # noqa: C901
         file.write(f"""
 [#{self._lyric_number:04}]
 Length={lyric.length}""".encode('shift-jis'))

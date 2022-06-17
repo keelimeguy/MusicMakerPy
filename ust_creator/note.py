@@ -1,5 +1,3 @@
-from typing import List
-
 from musicmaker.theory.pitch import Pitch
 
 from .tuning import Tuning
@@ -34,7 +32,7 @@ class Note:
 
     def get_flags(self):
         flags = f"B{self._bre}"
-        if no_formant_filter:
+        if self._no_formant_filter:
             flags += 'N'
         return flags
 

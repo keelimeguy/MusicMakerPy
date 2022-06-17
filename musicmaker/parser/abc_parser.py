@@ -1,6 +1,5 @@
 # Based on https://github.com/campagnola/pyabc/blob/master/pyabc.py
 
-import sys
 import re
 
 from musicmaker.theory.scale import Scale
@@ -41,15 +40,17 @@ X:reference number  no      yes     no      no      instruction
 Z:transcription     yes     yes     no      no      string
 """
 
+
 class InfoKey(object):
     def __init__(self, key, name, file_header, tune_header, tune_body, inline, type):
         self.key = key
         self.name = name.strip()
-        self.file_header = file_header=='yes'
-        self.tune_header = tune_header=='yes'
-        self.tune_body = tune_body=='yes'
-        self.inline = inline=='yes'
+        self.file_header = file_header == 'yes'
+        self.tune_header = tune_header == 'yes'
+        self.tune_body = tune_body == 'yes'
+        self.inline = inline == 'yes'
         self.type = type.strip()
+
 
 # parse info field table
 info_keys = {}
@@ -60,10 +61,10 @@ for line in information_field_table.split('\n'):
     fields = re.match(r'(.*)\s+(yes|no)\s+(yes|no)\s+(yes|no)\s+(yes|no)\s+(.*)', line[2:]).groups()
     info_keys[key] = InfoKey(key, *fields)
 
-file_header_fields = {k:v for k,v in info_keys.items() if v.file_header}
-tune_header_fields = {k:v for k,v in info_keys.items() if v.tune_header}
-tune_body_fields = {k:v for k,v in info_keys.items() if v.tune_body}
-inline_fields = {k:v for k,v in info_keys.items() if v.inline}
+file_header_fields = {k: v for k, v in info_keys.items() if v.file_header}
+tune_header_fields = {k: v for k, v in info_keys.items() if v.tune_header}
+tune_body_fields = {k: v for k, v in info_keys.items() if v.tune_body}
+inline_fields = {k: v for k, v in info_keys.items() if v.inline}
 
 # Decoration symbols from
 # http://abcnotation.com/wiki/abc:standard:v2.1#decorations
@@ -121,6 +122,7 @@ symbols = """
 !longphrase!           same, but extending 3/4 of the way down
 """
 
+
 class Token(object):
     def __init__(self, line, char, text):
         self._line = line
@@ -129,6 +131,7 @@ class Token(object):
 
     def __repr__(self):
         return "<%s \"%s\">" % (self.__class__.__name__, self._text)
+
 
 class Note(Token):
     def __init__(self, key, time, note, accidental, octave, num, denom, **kwds):
@@ -158,7 +161,7 @@ class Note(Token):
 
     @property
     def length(self):
-        n,d = self._length
+        n, d = self._length
         return (int(n) if n is not None else 1, int(d) if d is not None else 1)
 
     @property
@@ -172,7 +175,6 @@ class Note(Token):
         longer = direction == 'left'
         if '<' in dots:
             longer = not longer
-        n_dots = len(dots)
         num, den = self.length
         if longer:
             num = num * 2 + 1
@@ -182,58 +184,74 @@ class Note(Token):
             den = den * 2
             self._length = (num, den)
 
+
 class Beam(Token):
     pass
 
+
 class Space(Token):
     pass
+
 
 class Slur(Token):
     """   ( or )   """
     pass
 
+
 class Tie(Token):
     """   -   """
     pass
 
+
 class Newline(Token):
     pass
 
+
 class Continuation(Token):
-    """  \ at end of line  """
+    r"""  \ at end of line  """
     pass
+
 
 class GracenoteBrace(Token):
     """  {  {/  or }  """
     pass
 
+
 class ChordBracket(Token):
     """  [  or  ]  """
     pass
+
 
 class ChordSymbol(Token):
     """   "Amaj"   """
     pass
 
+
 class Annotation(Token):
     """    "<stuff"   """
     pass
+
 
 class Decoration(Token):
     """  .~HLMOPSTuv  """
     pass
 
+
 class Tuplet(Token):
     """  (5   """
+
     def __init__(self, num, **kwds):
         Token.__init__(self, **kwds)
         self.num = num
 
+
 class BodyField(Token):
     pass
 
+
 class InlineField(Token):
     pass
+
 
 class Rest(Token):
     def __init__(self, symbol, num, denom, **kwds):
@@ -241,6 +259,7 @@ class Rest(Token):
         Token.__init__(self, **kwds)
         self.symbol = symbol
         self.length = (int(num) if num is not None else 1, int(denom) if denom is not None else 1)
+
 
 # map mode names relative to Ionian (in chromatic steps)
 mode_values = {'major': 0, 'minor': 3, 'ionian': 0, 'aeolian': 3,
@@ -255,6 +274,7 @@ key_sig = {'C#': 7, 'F#': 6, 'B': 5, 'E': 4, 'A': 3, 'D': 2, 'G': 1, 'C': 0,
            'F': -1, 'Bb': -2, 'Eb': -3, 'Ab': -4, 'Db': -5, 'Gb': -6, 'Cb': -7}
 sharp_order = "FCGDAEB"
 flat_order = "BEADGCF"
+
 
 class Key(Scale):
     def __init__(self, name=None, root=None, mode=None):
@@ -308,7 +328,7 @@ class Key(Scale):
     def accidentals(self):
         """A dictionary of accidentals in the key signature.
         """
-        return {p:a for p,a in self.key_signature}
+        return {p: a for p, a in self.key_signature}
 
     @property
     def relative_ionian(self):
@@ -358,7 +378,9 @@ class AbcStaff(Staff):
                     header[-1] += ' ' + line[2:]
         self.parse_header(header)
         self.parse_tune(tune)
+        self.parse_tokens()
 
+    def parse_tokens(self):
         in_chord = False
         notes = []
         for token in self.tokens:
@@ -390,7 +412,7 @@ class AbcStaff(Staff):
     def parse_tune(self, tune):
         self.tokens = self.tokenize(tune, self.header)
 
-    def tokenize(self, tune, header):
+    def tokenize(self, tune, header):  # noqa: C901
         # get initial key signature from header
         key = Key(self.header['key'])
 
@@ -418,7 +440,7 @@ class AbcStaff(Staff):
             self.tempo = float(tempo)
 
         tokens = []
-        for i,line in enumerate(tune):
+        for i, line in enumerate(tune):
             line = line.rstrip()
 
             if len(line) > 2 and line[1] == ':' and (line[0] == '+' or line[0] in tune_body_fields):
@@ -451,7 +473,9 @@ class AbcStaff(Staff):
 
                 # Note
                 # Examples:  c  E'  _F2  ^^G,/4  =a,',3/2
-                m = re.match(r"(?P<acc>\^|\^\^|=|_|__)?(?P<note>[a-gA-G])(?P<oct>[,']*)(?P<num>\d+)?(?P<slash>/+)?(?P<den>\d+)?", part)
+                m = re.match(
+                    r"(?P<acc>\^|\^\^|=|_|__)?(?P<note>[a-gA-G])(?P<oct>[,']*)(?P<num>\d+)?(?P<slash>/+)?(?P<den>\d+)?",
+                    part)
                 if m is not None:
                     g = m.groupdict()
                     octave = int(g['note'].islower())
@@ -467,8 +491,19 @@ class AbcStaff(Staff):
                     else:
                         denom = 1
 
-                    tokens.append(Note(key=key, time=(self.meter_beats, self.meter_base, self.unit, self.tempo), note=g['note'], accidental=g['acc'],
-                        octave=octave, num=num, denom=denom, line=i, char=j, text=m.group()))
+                    tokens.append(
+                        Note(
+                            key=key,
+                            time=(self.meter_beats, self.meter_base, self.unit, self.tempo),
+                            note=g['note'],
+                            accidental=g['acc'],
+                            octave=octave,
+                            num=num,
+                            denom=denom,
+                            line=i,
+                            char=j,
+                            text=m.group()
+                        ))
 
                     if pending_dots is not None:
                         tokens[-1].dotify(pending_dots, 'right')
@@ -579,8 +614,7 @@ class AbcStaff(Staff):
 if __name__ == '__main__':
     from musicmaker.sound.staffplayer import StaffPlayer
 
-    abc = \
-"""X: 6
+    abc = """X: 6
 T: A Birthday
 R: polka
 M: 2/4

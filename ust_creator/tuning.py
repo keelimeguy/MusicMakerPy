@@ -47,11 +47,11 @@ class Portamento():
 
     def set_start(self, start: Position = Position.Middle):
         width = sum(self._pbw) / len(self._pbw)
-        if position == Position.Middle:
+        if start == self.Position.Middle:
             self._pbs = -width/2.0
-        elif position == Position.Left:
+        elif start == self.Position.Left:
             self._pbs = -width
-        elif position == Position.Right:
+        elif start == self.Position.Right:
             self._pbs = 0
         else:
             raise ValueError(f"unrecognized starting position: {start}")

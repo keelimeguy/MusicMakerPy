@@ -1,4 +1,3 @@
-
 class WeightedDigraph:
     class Node:
         def __init__(self, value):
@@ -15,7 +14,7 @@ class WeightedDigraph:
             return sorted(self.adj.keys(), key=lambda n: n.value)
 
         def value(self):
-            return value
+            return self.value
 
         def get_weight(self, node):
             return self.adj[node]
@@ -59,6 +58,6 @@ class WeightedDigraph:
     def show(self):
         for key in sorted(self.V):
             v = self.V[key]
-            print(str(v.value),':')
+            print(str(v.value), ':')
             for adj in sorted(v.adj, key=lambda n: (v.adj[n], n.value)):
                 print('\t->(', v.adj[adj], ') \t', str(adj.value))

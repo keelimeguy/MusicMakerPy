@@ -2,11 +2,11 @@ import argparse
 import pyaudio
 import struct
 import numpy
-import math
 import wave
 import sys
 
 from .synth import Synth
+
 
 class Wav:
     def __init__(self, sample_rate=44100):
@@ -26,7 +26,7 @@ class Wav:
         self.audio[channel].append(audio)
 
     def save(self, file_name):
-        wav_file = wave.open(file_name,'w')
+        wav_file = wave.open(file_name, 'w')
 
         nchannels = 1
         sampwidth = 2
@@ -34,7 +34,6 @@ class Wav:
         comptype = 'NONE'
         compname = 'not compressed'
         wav_file.setparams((nchannels, sampwidth, self.sample_rate, nframes, comptype, compname))
-
 
         chunk_dict = {}
         for channel in self.audio:
@@ -46,7 +45,7 @@ class Wav:
 
         # (short) 16-bit signed integers for the sample size
         #   [32767 is the maximum value for a short integer.]
-        chunk = numpy.vectorize(lambda sample: struct.pack('h', int( sample * 32767.0 )))(chunk)
+        chunk = numpy.vectorize(lambda sample: struct.pack('h', int(sample * 32767.0)))(chunk)
         wav_file.writeframes(chunk)
 
         wav_file.close()
@@ -115,15 +114,16 @@ class Wav:
 
         p.terminate()
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Play .wav files.')
     parser.add_argument('-p', '--play',
-        help='Play the given .wav file.')
+                        help='Play the given .wav file.')
     parser.add_argument('-g', '--generate', action='store_true',
-        help='Generate a wav file and play it.')
+                        help='Generate a wav file and play it.')
     parser.add_argument('-o', '--output',
-        help='Generate a wav file and save it to this ouput.')
+                        help='Generate a wav file and save it to this ouput.')
 
     args = parser.parse_args()
     if not (args.output or args.generate or args.play):

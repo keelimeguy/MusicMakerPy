@@ -25,13 +25,13 @@ class Language(ABC):
                 yield c
 
     @classmethod
-    def _gen_charset_from_line_helper(cls, line: str):
+    def _gen_charset_from_line_helper(cls, line: str):  # noqa: C901
         output = []
         next_from_charset = ''
         line = line[::-1]
 
         for i, c in enumerate(line):
-            logger.debug(f"--------------")
+            logger.debug("--------------")
             logger.debug(f"current:{next_from_charset}")
             logger.debug(f"newchar:{c}")
 
@@ -74,8 +74,8 @@ class Language(ABC):
             next_from_charset = c + next_from_charset
 
         if next_from_charset in cls._charset:
-            logger.debug(f"--------------")
-            logger.debug(f"leftovers")
+            logger.debug("--------------")
+            logger.debug("leftovers")
             logger.debug(f"out:{next_from_charset}")
             output.append(next_from_charset)
 

@@ -4,7 +4,7 @@ import sys
 
 from .language.hiragana import Hiragana
 from .language.english import English
-from .lyric import Lyric, parse_lyrics
+from .lyric import parse_lyrics
 from .voice import Voice
 from .ust import UST
 

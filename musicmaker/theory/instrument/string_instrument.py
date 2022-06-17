@@ -1,9 +1,10 @@
 from musicmaker.theory.pitch import Pitch
 
+
 class StringInstrument:
     def __init__(self, num_frets, strings):
-        self.num_frets = num_frets # num_frets = # notes per string
-        self.strings = strings[::-1] # array of Pitches, from highest string down
+        self.num_frets = num_frets  # num_frets = # notes per string
+        self.strings = strings[::-1]  # array of Pitches, from highest string down
         # i.e [G4,C4,E4,A4] are strings 4, 3, 2, 1 (this makes sense don't worry)
 
     def num_strings(self):
@@ -27,7 +28,7 @@ class StringInstrument:
     def find_frets_for_note_on_string(self, note, string_num):
         if isinstance(note, str):
             note = Pitch(note)
-        note_diff = note.value%12 - self.strings[string_num-1].value%12 + 12
+        note_diff = note.value % 12 - self.strings[string_num-1].value % 12 + 12
         if note_diff >= 12:
             note_diff -= 12
         return list(range(note_diff, self.num_frets+1, 12))

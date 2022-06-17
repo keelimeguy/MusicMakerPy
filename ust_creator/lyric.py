@@ -7,7 +7,6 @@ from musicmaker.theory.pitch import Pitch, REV_NOTE_MAP
 
 from .language.hiragana import Hiragana
 from .language.language import Language
-from .language.english import English
 from .note import Note
 
 logger = logging.getLogger(__name__)

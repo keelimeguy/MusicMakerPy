@@ -14,7 +14,7 @@ class LanguageTestCase(unittest.TestCase):
             answer = [c for c in English.gen_charset_from_line(line)]
             self.assertEqual(answer, expected)
 
-    def test_gen_charset_from_line_english(self):
+    def test_gen_charset_from_line_hiragana(self):
         test_cases = [
             ('ちゃっく', ['ちゃ', 'っ', 'く']),
         ]
