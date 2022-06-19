@@ -1,11 +1,27 @@
+import contextlib
 import argparse
 import pyaudio
 import struct
 import numpy
 import wave
 import sys
+import os
 
 from .synth import Synth
+
+
+@contextlib.contextmanager
+def ignore_stderr():
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    old_stderr = os.dup(2)
+    sys.stderr.flush()
+    os.dup2(devnull, 2)
+    os.close(devnull)
+    try:
+        yield
+    finally:
+        os.dup2(old_stderr, 2)
+        os.close(old_stderr)
 
 
 class Wav:
@@ -52,7 +68,8 @@ class Wav:
         return
 
     def play(self, loop=False):
-        p = pyaudio.PyAudio()
+        with ignore_stderr():
+            p = pyaudio.PyAudio()
         stream = p.open(
             format=pyaudio.paFloat32,
             channels=1,
@@ -95,7 +112,8 @@ class Wav:
 
         wf = wave.open(file, 'rb')
 
-        p = pyaudio.PyAudio()
+        with ignore_stderr():
+            p = pyaudio.PyAudio()
 
         stream = p.open(
             format=p.get_format_from_width(wf.getsampwidth()),
