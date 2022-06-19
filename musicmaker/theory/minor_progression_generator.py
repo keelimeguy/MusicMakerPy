@@ -1,4 +1,5 @@
 import argparse
+import random
 import sys
 
 from musicmaker.sound.staffplayer import StaffPlayer
@@ -46,6 +47,13 @@ class MinorProgression(ProgressionGenerator):
 
     def __init__(self, root=None, start=None):
         resolve = self.position_dict['im']
+        if start is None:
+            rand = random.randint(0, 2)
+            if rand == 0:
+                start = self.position_dict[random.choice(['iidim', 'viidim/2', 'V', 'bIIIaug', 'im/b3', 'bVI', 'ivm/b6',
+                                                          'ivm', 'bII/4', 'im/5', 'im', 'ivm/1', 'V/1'])]
+            else:
+                start = resolve
         ProgressionGenerator.__init__(self, Scale(root, 'Minor'), resolve, start)
         self.setup()
 
