@@ -138,7 +138,7 @@ if __name__ == '__main__':
         description='Generate major chord progression.')
     parser.add_argument('-r', '--root',
                         help='The root of the major progression (e.g. C, Bb, F#).')
-    parser.add_argument('-g', '--generate',
+    parser.add_argument('-g', '--generate', type=int,
                         help='Generate a major progression with the given length.')
     parser.add_argument('-p', '--play', action='store_true',
                         help='Play the generated major progression.')
@@ -148,12 +148,12 @@ if __name__ == '__main__':
         if not Pitch.valid(args.root):
             print('Valid roots are', ['None']+[root for root in Pitch.notes()])
             sys.exit()
-        p = MajorProgression(Pitch(args.root))
+        p = MajorProgression(Pitch.create(args.root))
     else:
         p = MajorProgression()
 
     if args.generate:
-        progression = p.generate(int(args.generate))
+        progression = p.generate(args.generate)
         progression.show()
     else:
         p.show()

@@ -9,7 +9,7 @@ from musicmaker.theory.chord import Chord, REDUCED_CHORD_REGEX
 class Ukulele(StringInstrument):
     def __init__(self, frets=12, strings=None):
         StringInstrument.__init__(self, frets, strings if strings else
-                                  [Pitch('G', 4), Pitch('C', 4), Pitch('E', 4), Pitch('A', 4)])
+                                  [Pitch.create('G', 4), Pitch.create('C', 4), Pitch.create('E', 4), Pitch.create('A', 4)])
 
 
 if __name__ == '__main__':
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.chord:
-        c = Chord(args.chord)
+        c = Chord.create(args.chord)
         if c.valid:
             uke = Ukulele()
             frets = uke.find_frets_for_notes(c.get_notes())

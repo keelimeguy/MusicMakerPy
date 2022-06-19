@@ -1,3 +1,4 @@
+import methodtools
 import argparse
 import random
 import sys
@@ -30,6 +31,7 @@ class Scale:
             else:
                 self.descending = descending
 
+        @methodtools.lru_cache(16)
         def find_step(self, pos):
             if pos == 0:
                 return 0
@@ -137,7 +139,7 @@ class Scale:
 
     def __init__(self, root, mode):
         if isinstance(root, str):
-            self.root = Pitch(root)
+            self.root = Pitch.create(root)
         else:
             self.root = root
         if isinstance(mode, str):
@@ -189,7 +191,7 @@ if __name__ == '__main__':
         mode = list(Scale.modes)[mode]
 
     if args.root and Pitch.valid(args.root):
-        scale = Scale(Pitch(args.root), mode)
+        scale = Scale(Pitch.create(args.root), mode)
     elif args.root:
         print('Valid roots are', [root for root in Pitch.notes()])
         sys.exit()

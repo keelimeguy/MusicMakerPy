@@ -27,7 +27,7 @@ class StringInstrument:
 
     def find_frets_for_note_on_string(self, note, string_num):
         if isinstance(note, str):
-            note = Pitch(note)
+            note = Pitch.create(note)
         note_diff = note.value % 12 - self.strings[string_num-1].value % 12 + 12
         if note_diff >= 12:
             note_diff -= 12

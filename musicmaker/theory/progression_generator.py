@@ -36,13 +36,13 @@ class ProgressionGenerator(WeightedDigraph):
         def get_base_chord(self, scale):
             if scale.root:
                 pitch = self.get_base_pitch(scale)
-                return Chord(pitch.name + self.base_adjust)
+                return Chord.create(pitch.name + self.base_adjust)
             return (self.name, [str(self.root_step)+'('+str(self.step_adjust)+')', self.base_adjust])
 
         def get_adjusted_chord(self, scale, i):
             if scale.root:
                 pitch = self.get_base_pitch(scale)
-                return Chord(pitch.name + self.opt_adjust[i])
+                return Chord.create(pitch.name + self.opt_adjust[i])
             return (self.name, [str(self.root_step)+'('+str(self.step_adjust)+')', self.opt_adjust[i]])
 
         def get_random_adjusted_chord(self, scale):

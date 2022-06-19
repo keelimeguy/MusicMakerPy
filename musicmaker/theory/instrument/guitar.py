@@ -9,7 +9,8 @@ from musicmaker.theory.chord import Chord, REDUCED_CHORD_REGEX
 class Guitar(StringInstrument):
     def __init__(self, frets=22, strings=None):
         StringInstrument.__init__(self, frets, strings if strings else
-                                  [Pitch('E', 2), Pitch('A', 2), Pitch('D', 3), Pitch('G', 3), Pitch('B', 3), Pitch('E', 4)])
+                                  [Pitch.create('E', 2), Pitch.create('A', 2), Pitch.create('D', 3),
+                                   Pitch.create('G', 3), Pitch.create('B', 3), Pitch.create('E', 4)])
 
 
 if __name__ == '__main__':
@@ -20,7 +21,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.chord:
-        c = Chord(args.chord)
+        c = Chord.create(args.chord)
         if c.valid:
             g = Guitar()
             frets = g.find_frets_for_notes(c.get_notes())

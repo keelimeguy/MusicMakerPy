@@ -157,7 +157,7 @@ class Note(Token):
 
     @property
     def pitch(self):
-        return Pitch(self.name, self.octave+4)
+        return Pitch.create(self.name, self.octave+4)
 
     @property
     def length(self):

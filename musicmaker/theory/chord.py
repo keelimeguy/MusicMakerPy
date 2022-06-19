@@ -1,3 +1,4 @@
+import functools
 import argparse
 import re
 
@@ -26,13 +27,41 @@ REDUCED_CHORD_REGEX = (
 
 
 class Chord:
-    def __init__(self, name, octave=4):
-        self.name = name
+    def create(name=None, octave=4, key="", kind="", add="", adjust="", bass="", adjust2=""):
+        if name is None:
+            name = f"{key}{kind}{add}{adjust}{bass}{adjust2}"
+        return Chord._cached_create(name, octave)
+
+    @functools.lru_cache(256)
+    def _cached_create(name=None, octave=4):
+        return Chord(name, octave)
+
+    def __init__(self, name=None, octave=4, key="", kind="", add="", adjust="", bass="", adjust2=""):
         self.notes = []
-        self.make(name, octave)
+
+        if name is None:
+            self.name = f"{key}{kind}{add}{adjust}{bass}{adjust2}"
+            adjust = adjust + adjust2
+
+        else:
+            self.name = name
+
+            m = re.match(CHORD_REGEX, name)
+            if m is None or m.group(0) != name:
+                raise ValueError(f"Invalid chord: {name}")
+            key = m.group('key')
+            kind = m.group('kind')
+            add = m.group('add')
+            adjust = m.group('adjust') + m.group('adjust2')
+            bass = m.group('bass')
+
+        self.make(key, kind, add, adjust, bass, octave)
 
     def __str__(self):
         return self.name
+
+    def __eq__(self, other):
+        return self.notes == other.notes
 
     def show(self):
         print(self, ':', [str(pitch) for pitch in self.notes])
@@ -48,22 +77,14 @@ class Chord:
     def get_notes(self):
         return self.notes
 
-    def make(self, name, octave=4):  # noqa: C901
+    def make(self, key, kind, add, adjust, bass, octave=4):  # noqa: C901
         self.valid = False
-        m = re.match(CHORD_REGEX, name)
-        if m is None or m.group(0) != name:
-            return
-        key = m.group('key')
-        kind = m.group('kind')
-        add = m.group('add')
-        adjust = m.group('adjust') + m.group('adjust2')
-        bass = m.group('bass')
 
         if not key:
             return
 
         # Automatically add root
-        root = Pitch(key).normal()
+        root = Pitch.create(key).normal()
         self.add(root)
 
         # Seventh will get one flat
@@ -153,7 +174,7 @@ class Chord:
                 if sus_split:
                     next_step = int(sus_split)
                     # Remove existing third to be suspended
-                    if kind == 'm' or kind == 'dim':
+                    if kind in ['m', 'dim', 'mM']:
                         self.remove(root.transpose(major_mode.find_step(3)-1))
                     else:
                         self.remove(root.transpose(major_mode.find_step(3)))
@@ -211,11 +232,10 @@ class Chord:
             if bass_id[0] >= '0' and bass_id[0] <= '9':
                 bass_note = root.transpose(major_mode.find_step(int(bass_id)) + step_adjust)
             else:
-                bass_note = Pitch(bass_id, adjusted_root.octave)
-                bass_note.set_octave(adjusted_root.octave+1 if bass_note.value < adjusted_root.value else adjusted_root.octave)
+                bass_note = Pitch.create(bass_id, adjusted_root.octave)
+                bass_note = bass_note.set_octave(
+                    adjusted_root.octave+1 if bass_note.value < adjusted_root.value else adjusted_root.octave)
             self.add(bass_note)
-
-        self.order(bass_note, octave)
 
         # Deal with additions last, so other modifications don't affect them
         if adjust:
@@ -243,6 +263,8 @@ class Chord:
                     add_arg = re.sub(r'[#b]', '', add_arg)
                     self.add(root.transpose(major_mode.find_step(int(add_arg)) + base_step_adjust))
 
+        self.order(bass_note, octave)
+
         self.notes.sort(key=lambda el: el.value)
         self.valid = True
 
@@ -251,15 +273,19 @@ class Chord:
         if bass_note in self.notes:
             self.notes.sort(key=lambda el: el.value)
             next = self.notes[0]
-            while next.value % 12 != bass_note.value % 12:
+            octave_diff = bass_note.octave - next.octave
+            octave_diff += 1 if bass_note.value % 12 > next.value % 12 else 0
+            while next.value != bass_note.value:
                 self.remove(next)
-                self.add(next)
+                replace = next.raise_octave(octave_diff)
+                if replace == bass_note:
+                    self.add(replace.raise_octave(1))
+                else:
+                    self.add(replace)
                 next = self.notes[0]
+            octave_diff = octave - next.octave
             for i in range(len(self.notes)):
-                self.notes[i].set_octave(octave)
-                if i+1 < len(self.notes):
-                    if self.notes[i+1].value % 12 <= self.notes[i].value % 12:
-                        octave += 1
+                self.notes[i] = self.notes[i].raise_octave(octave_diff)
         else:
             self.add(bass_note)
             self.order(bass_note)
@@ -275,7 +301,7 @@ if __name__ == '__main__':
                         help='Play the given chord.')
     args = parser.parse_args()
 
-    c = Chord(args.chord)
+    c = Chord(args.chord, -1)
     if c.valid:
         c.show()
 
